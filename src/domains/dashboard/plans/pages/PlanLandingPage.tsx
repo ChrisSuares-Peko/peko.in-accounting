@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { Content } from 'antd/es/layout/layout';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -77,14 +77,6 @@ const PlanLandingPage = () => {
         [individualPlans]
     );
 
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('service_viewed', {
-                service_name: 'peko_plan',
-            });
-        }
-    }, []);
-
     if (roleName && roleName === 'corporate sub user') {
         return <Navigate to="/404" replace />;
     }
@@ -120,9 +112,6 @@ const PlanLandingPage = () => {
                 })
             );
             return;
-        }
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('Peko_plan_viewed');
         }
         startSubscription(card.id, undefined, billing);
     };

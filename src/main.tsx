@@ -14,7 +14,6 @@ import './index.css';
 import { handleLogout } from './services/handleLogout';
 import IncomingCallListener from './domains/dashboard/pekoConnect/components/IncomingCallListener';
 import { useAppSelector } from './hooks/store';
-import './moengage-init';
 
 window.addEventListener('vite:preloadError', (event: any) => {
     console.error('Vite preload error:', event);

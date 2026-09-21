@@ -4,7 +4,7 @@ import { Flex, Image, Menu, message } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Logo from '@assets/mainLogo/Logo.png';
-import { PekoPackages,RoleName } from '@customtypes/general';
+import { PekoPackages } from '@customtypes/general';
 import { useAppSelector } from '@src/hooks/store';
 
 import { useNavData } from './SidebarData';
@@ -21,21 +21,6 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const transformedNavData = useMemo(() => transformNavData(navData || []), [navData]);
     const { packageName, role } = useAppSelector(state => state.reducer.auth);
-    const handleClick = (key: string) => {
-        const path = key.replace(/^\//, '');
-        const excludedKeys = ['more-services', 'reports', 'need-help', 'settings'];
-        if (excludedKeys.includes(path)) {
-            // console.log(`${path} is excluded from event tracking.`);
-        }
-
-         if (role === RoleName.CORPORATE && typeof Moengage?.track_event === 'function') {
-              Moengage.track_event('service_viewed', {
-                service_name: path,
-            });
-       
-        }
-          
-    };
 
     const selectedKeys = useMemo(
         () => [`/${location.pathname.split('/')[1]}`, location.pathname],
@@ -61,7 +46,6 @@ const Sidebar = () => {
                 selectedKeys={selectedKeys}
                 onClick={({ key }) => {
                     if (key !== '') {
-                        handleClick(key);
                         navigate(key, { state: { initialActiveTab: '1' } });
                     } else {
                         message.error('non clickable');

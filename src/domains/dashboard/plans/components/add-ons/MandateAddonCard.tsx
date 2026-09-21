@@ -53,30 +53,6 @@ const MandateAddonCard = ({ addOnpaymentPayload, planId }: Props) => {
     const finalPrice = quote ? quote.expectedPaymentAmount : pgAmount;
 
     const handlePurchase = () => {
-        // Addon-with-mandate purchases go straight through Cashfree's checkout SDK (see
-        // usePaymentRequset.ts) rather than the shared payments domain, so they never touch the
-        // generic checkout/payment-result mechanism — tracked directly here instead, mirroring
-        // PlanDetailsCard.tsx's own individual-package checkout event. plans/pages/PaymentSuccess.tsx
-        // is still the landing page (see handlePaymentRequest), so seeding paymentResult here is
-        // enough for its existing dynamic ${service}_payment_result handling to pick it up.
-        const moengageServiceName = title?.toLowerCase().replace(/\s+/g, '_');
-        if (moengageServiceName) {
-            if (typeof Moengage?.track_event === 'function') {
-                Moengage.track_event(`${moengageServiceName}_checkout`, {
-                    [`${moengageServiceName}_plan`]: 'monthly',
-                    coupon_code_used: false,
-                    total_amount: pgAmount,
-                });
-            }
-            sessionStorage.setItem(
-                'paymentResult',
-                JSON.stringify({
-                    total_amount: pgAmount,
-                    serviceName: title,
-                    isGroupPlan: false,
-                })
-            );
-        }
         handlePaymentRequest({
             isMandate: true,
             amount: finalPrice,

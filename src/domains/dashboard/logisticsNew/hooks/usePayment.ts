@@ -165,26 +165,6 @@ export default function usePayment() {
                 { key: 'Platform fee', value: `₹${formatNumberWithLocalString(data.surcharge ?? 0)}` },
             ];
 
-            // Shipment-specific properties for the logistics_checkout event, merged with
-            // coupon_code_used/total_amount by the shared checkout mechanism in
-            // payments/hooks/usePaymentApi.ts (same pattern as Hotels' useCheckout / GiftCards'
-            // BuyForm) — that hook also seeds paymentResult for logistics_payment_result.
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails: {
-                        length,
-                        breadth: width,
-                        height,
-                        weight,
-                        orgin_city: originCity?.city,
-                        destination_city: destinationCity?.city,
-                        price: selectedCompanyData.price,
-                        vendor_name: selectedCompanyData.courierName,
-                    },
-                })
-            );
-
             let requestBody;
             const deliveryPartnerData = {
                 deliveryCompanyId: selectedCompanyData.deliveryCompanyId,

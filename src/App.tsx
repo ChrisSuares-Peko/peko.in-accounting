@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import AntdConfig from './antd.config';
+import AppErrorBoundary from './components/molecular/AppErrorBoundary';
 import DataModeToggle from './components/molecular/dataModeToggle/DataModeToggle';
 import useCustomNotification from './hooks/useCustomNotification';
 import { useScrollToTop } from './hooks/useScrollToTop';
@@ -39,7 +40,9 @@ function App() {
     return (
         <AntdConfig>
             {contextHolder}
-            <Router />
+            <AppErrorBoundary>
+                <Router />
+            </AppErrorBoundary>
             <DataModeToggle />
         </AntdConfig>
     );

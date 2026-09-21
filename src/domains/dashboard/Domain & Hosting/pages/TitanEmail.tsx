@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 import { Content } from 'antd/es/layout/layout';
 import { useNavigate } from 'react-router-dom';
@@ -14,26 +14,11 @@ import useServiceCart from '../hooks/useServiceCart';
 const TitanEmailPage = () => {
     const navigate = useNavigate();
     const plansRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('titan_email_viewed', {});
-        }
-    }, []);
 
     const { plans, isLoading } = useHostingPlans('titan_email');
     const { handleAddToCart, cartConflictModalProps } = useServiceCart();
 
     const onAddToCart = async (productId: string, planId: string, planName: string) => {
-        if (typeof Moengage?.track_event === 'function') {
-            const plan = plans.find(p => p.planId === planId);
-            const price = plan?.pricingDetails?.add?.['1'] ?? plan?.price ?? 0;
-            Moengage.track_event('titan_plan_selected', {
-                plan_name: planName,
-                tenure: 1,
-                price,
-                total_price: price,
-            });
-        }
         const result = await handleAddToCart({
             itemType: 'titan_email',
             productId,

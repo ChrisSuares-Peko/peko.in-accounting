@@ -59,26 +59,6 @@ const AddonDetailCard = ({ paymentPayload }: Props) => {
         //     );
         //     return;
         // }
-        // Same reasoning as MandateAddonCard.tsx: this addon flow never reaches the shared
-        // payments domain (Cashfree checkout SDK is called directly), so tracking happens here,
-        // with paymentResult seeded for plans/pages/PaymentSuccess.tsx to pick up.
-        const moengageServiceName = title?.toLowerCase().replace(/\s+/g, '_');
-        if (moengageServiceName) {
-            if (typeof Moengage?.track_event === 'function') {
-                Moengage.track_event(`${moengageServiceName}_checkout`, {
-                    coupon_code_used: false,
-                    total_amount: finalPrice,
-                });
-            }
-            sessionStorage.setItem(
-                'paymentResult',
-                JSON.stringify({
-                    total_amount: finalPrice,
-                    serviceName: title,
-                    isGroupPlan: false,
-                })
-            );
-        }
         handleAddOnPaymentRequest({
             pgAmount: finalPrice,
             addonsAccessKey: rest.addonsAccessKey,

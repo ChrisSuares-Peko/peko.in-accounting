@@ -43,19 +43,6 @@ type PlanSelectionContext = {
     channelBound: ChannelAmountBound;
 };
 
-export const BILL_VIEWED_EVENT_MAP: Record<string, string> = {
-    bbps_utility_electricity: 'electricity_bill_viewed',
-    bbps_utility_lpg: 'lpg_cylinder_bill_viewed',
-    bbps_utility_pipedgas: 'piped_gas_bill_viewed',
-    bbps_utility_broadband: 'broadband_bill_viewed',
-    bbps_utility_water: 'water_bill_viewed',
-    bbps_utility_dth: 'dth_recharge_bill_viewed',
-    bbps_utility_fastag: 'fastag_recharge_bill_viewed',
-    bbps_utility_landline: 'landline_bill_viewed',
-    bbps_other_prepaidMeter: 'prepaid_meter_bill_viewed',
-    bbps_telecom_postpaid: 'postpaid_recharge',
-};
-
 function normalizeBillerRuleValue(value?: string): string {
     return (value || '').replace(/[\s-]+/g, '_').toUpperCase().trim();
 }
@@ -141,59 +128,6 @@ export default function usePaymentApi() {
                 return;
             }
             const { apiUrl } = serviceData!;
-
-            if (typeof Moengage?.track_event === 'function') {
-                const billViewedEvent = BILL_VIEWED_EVENT_MAP[accessKeyName];
-                if (billViewedEvent) {
-                    const payload: Record<string, any> = {};
-                    if (billerName) payload.service_provider = billerName;
-                    if (accessKeyName === 'bbps_telecom_postpaid') {
-                        // postpaid_recharge wants the mobile number under "number" specifically,
-                        // not the generic customer_id/mobile_number keys used below.
-                        const numberEntry = Object.entries(values).find(
-                            ([key, val]) => key !== 'serviceProvider' && key !== 'amount' && val
-                        );
-                        if (numberEntry) payload.number = numberEntry[1];
-                    } else {
-                        if (values.CustomerId) payload.customer_id = values.CustomerId;
-                        if (values['Consumer Number']) payload.customer_number = values['Consumer Number'];
-                        if (values['Distributor ID']) payload.distribution_id = values['Distributor ID'];
-                        if (values['Mobile Number']) payload.mobile_number = values['Mobile Number'];
-                        if (values['Unique Consumer ID']) payload.unique_consumer_id = values['Unique Consumer ID'];
-                        if (values['Vehicle Number']) payload.vehicle_number = values['Vehicle Number'];
-                        if (values['Meter Number']) payload.meter_number = values['Meter Number'];
-                        // The customer-facing form fields are dynamic per biller (DetailPageForm renders
-                        // them from the biller's own metadata, e.g. "Consumer No.", "CA Number", "Subscriber
-                        // ID"...), so the exact-name checks above only catch a few known labels. When a
-                        // biller uses some other label for its single identifying field (common for
-                        // electricity/DTH), fall back to whatever value the user actually entered.
-                        const hasIdentifier = [
-                            'customer_id',
-                            'customer_number',
-                            'distribution_id',
-                            'mobile_number',
-                            'unique_consumer_id',
-                            'vehicle_number',
-                            'meter_number',
-                        ].some(key => payload[key]);
-                        if (!hasIdentifier) {
-                            const fallbackEntry = Object.entries(values).find(
-                                ([key, val]) => key !== 'serviceProvider' && key !== 'amount' && val
-                            );
-                            if (fallbackEntry) payload.customer_id = fallbackEntry[1];
-                        }
-                    }
-                    Moengage.track_event(billViewedEvent, payload);
-                }
-            }
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails: {
-                        ...(billerName && { service_provider: billerName }),
-                    },
-                })
-            );
 
             const fetchRequirement =
                 selectedBiller?.billerFetchRequiremet || selectedBiller?.billerFetchRequirement || '';
@@ -707,17 +641,6 @@ export default function usePaymentApi() {
                         Number(surchargeData && surchargeData?.corporateCashback) || 0,
                     ...tightenWithChannelBound(undefined, undefined, ctx.channelBound),
                     navigatePath: path,
-                })
-            );
-            // Plan-based billers (DTH, FASTag, ...) skip handlePayment's flow entirely once the
-            // plan drawer opens, so service_details — needed for the generic checkout/payment
-            // result events — has to be (re-)seeded here too.
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails: {
-                        ...(ctx.billerName && { service_provider: ctx.billerName }),
-                    },
                 })
             );
             setIsLoading(false);

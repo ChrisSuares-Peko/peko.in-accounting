@@ -558,12 +558,6 @@ const TravellerDetails = () => {
         travelDate?: string;
     } | null;
 
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('visa_traveller_details');
-        }
-    }, []);
-
     const dispatch = useAppDispatch();
     const { role, id } = useAppSelector(s => s.reducer.auth);
     const basicInfo = useAppSelector(s => s.reducer.basicInfo.data);

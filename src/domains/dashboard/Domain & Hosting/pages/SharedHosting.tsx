@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { Typography } from 'antd';
 import { Content } from 'antd/es/layout/layout';
@@ -53,11 +53,6 @@ const SharedHostingPage = () => {
     const plansRef = useRef<HTMLDivElement>(null);
     const [serverLocation, setServerLocation] = useState<LocationType>('in');
     const [os, setOs] = useState<OsType>(searchParams.get('os') === 'windows' ? 'windows' : 'linux');
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('shared_hosting_viewed', {});
-        }
-    }, []);
 
     const { plans, isLoading } = useHostingPlans('shared_hosting');
     const { handleAddToCart, cartConflictModalProps } = useServiceCart();
@@ -92,14 +87,6 @@ const SharedHostingPage = () => {
         planName: string,
         billingCycle: number
     ) => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('hosting_selected', {
-                plan: planName,
-                OS: os,
-                country: serverLocation,
-                tenure: billingCycle,
-            });
-        }
         const result = await handleAddToCart({
             itemType: 'shared_hosting',
             productId,

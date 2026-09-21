@@ -21,9 +21,6 @@ import useBooking from '../hooks/useBooking';
 import useDomesticRoundTrip from '../hooks/useDomesticRoundTrip';
 import useSurchargeDetails from '../hooks/useSurchargeApi';
 import useTraceIdTimer from '../hooks/useTraceIdTimer';
-import { retrieveAirportName } from '../utils/airlineData';
-import { retrieveFlightClass } from '../utils/getFlightClass';
-import { tripMethods } from '../utils/options';
 
 const { useBreakpoint } = Grid;
 
@@ -112,32 +109,6 @@ const Summary = () => {
                 `${paths.dashboard.corporateTravel}/${paths.airline.index}/${paths.airline.results}/${paths.airline.details}`
             );
             return;
-        }
-
-        const parseFlightDate = (d: string) => new Date(d.split('-').reverse().join('-'));
-        const flightEventPayload: Record<string, any> = {
-            from_city: searchData.fromLocation1,
-            destination_city: searchData.toLocation1,
-            depart_date: parseFlightDate(searchData.depart1),
-            cabin_class: retrieveFlightClass(searchData.class),
-            trip_type: tripMethods.find(t => t.value === searchData.tripType)?.label,
-            number_passengers: searchData.adults + searchData.children + searchData.infants,
-            airline: selectedAirline.journey[0]?.[0]?.Airline.AirlineName,
-            fare: selectedAirline.price,
-            airport_takeoff: retrieveAirportName(selectedAirline.journey[0]?.[0]?.Origin.Airport.AirportCode),
-            airport_landing: retrieveAirportName(selectedAirline.journey[0]?.[selectedAirline.journey[0].length - 1]?.Destination.Airport.AirportCode),
-            flight_number: selectedAirline.flightNumber,
-            time_takeoff: selectedAirline.depart.datetime,
-            time_landing: selectedAirline.arrive.datetime,
-            total_amount: paymentData.totalAmount,
-        };
-        if (searchData.tripType === 2) flightEventPayload.return_date = parseFlightDate(searchData.arrive);
-        if (searchData.tripType === 3) {
-            flightEventPayload.from_city_multi = searchData.fromLocation;
-            flightEventPayload.destination_city_multi = searchData.toLocation;
-        }
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('flight_summary_confirmed', flightEventPayload);
         }
 
         const updatedPaymentData = {

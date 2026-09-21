@@ -166,16 +166,6 @@ const PrepaidForm: React.FC<PrepaidFormProps> = ({ onProceed, initialFormData })
                             data.planCategory
                         );
                     }
-                     if (typeof Moengage?.track_event === 'function') {
-                        // No plan is chosen yet at this step, so there's no amount to report —
-                        // that's captured on prepaid_recharge once the user picks a plan and pays
-                        // (see handlePrepaidPay).
-                        Moengage.track_event('prepaid_started', {
-                            service_provider: values.serviceProvider,
-                            circle: values.circle,
-                            number: values.mobileNumber,
-                        });
-                    }
                 } finally {
                     setSubmitting(false);
                 }

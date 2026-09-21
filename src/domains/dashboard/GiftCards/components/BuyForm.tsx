@@ -215,14 +215,6 @@ const BuyForm: React.FC<BuyFormProps> = ({
                     }
                     hasSkippedInitialAddressReset.current = true;
                     onToggle(true);
-                          if (typeof Moengage?.track_event === 'function') {
-                        Moengage.track_event('giftcard_buy_now', {
-                            brand_name: product_name,
-                            amount: parseFloat(values.amount),
-                            mode: orderType,
-                            quantity: values.quantity,
-                        });
-                    }
                     setAmountConfirmed(true);
                     onContinue?.();
                 }

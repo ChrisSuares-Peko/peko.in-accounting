@@ -23,18 +23,6 @@ export default function useDomainHostingCheckout() {
 
     const handleProceedToPayment = useCallback(
         async (assignedDomain: string | null) => {
-            const getEventPrefix = () => {
-                if (!cartData) return 'domain';
-                const primaryItem = cartData.items.find(i => i.itemType !== 'domain');
-                const prefixMap: Record<string, string> = {
-                    vps_server: 'vps',
-                    backup: 'vps',
-                    shared_hosting: 'hosting',
-                    titan_email: 'titan',
-                    google_workspace: 'google_workspace',
-                };
-                return primaryItem ? (prefixMap[primaryItem.itemType] ?? 'domain') : 'domain';
-            };
             if (!cartData || !customerId) {
                 dispatch(
                     showToast({ description: 'Cart or customer data missing. Please try again.', variant: 'error' })
@@ -123,23 +111,6 @@ export default function useDomainHostingCheckout() {
                     title: 'Bill Summary',
                     payload: requestBody,
                     url: 'officeAndBusiness/domain-and-hosting/payment',
-                })
-            );
-
-            if (typeof Moengage?.track_event === 'function') {
-                const domainNames = cartData.items
-                    .filter(i => i.itemType === 'domain')
-                    .map(i => i.productName)
-                    .filter(Boolean);
-                Moengage.track_event(`${getEventPrefix()}_order_processing`, {
-                    domain_name: domainNames.length === 1 ? domainNames[0] : domainNames,
-                    total_price: total,
-                });
-            }
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails: { total_amount: total, moengage_prefix: getEventPrefix() },
                 })
             );
 

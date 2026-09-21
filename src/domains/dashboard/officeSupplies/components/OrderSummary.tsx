@@ -225,13 +225,6 @@ const OrderSummary = (props: OrderSummaryProps) => {
 
             dispatch(setValidation(result));
 
-            const quoteSummary = getValidatedSummary(result.groups, result.validatedTotal);
-            const serviceDetails = {
-                cart_total_value: result.validatedTotal,
-                cart_item_count: scopedCount,
-                cart_shipping_fee: quoteSummary.shipping,
-            };
-            sessionStorage.setItem('service_details', JSON.stringify({ serviceDetails }));
         } finally {
             setPhase(null);
         }

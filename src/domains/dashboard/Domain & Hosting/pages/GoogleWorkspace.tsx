@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 import { Content } from 'antd/es/layout/layout';
 import { useNavigate } from 'react-router-dom';
@@ -13,11 +13,6 @@ import useServiceCart from '../hooks/useServiceCart';
 
 const GoogleWorkspacePage = () => {
     const navigate = useNavigate();
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('google_workspace_viewed', {});
-        }
-    }, []);
 
     const { plans, isLoading } = useHostingPlans('google_workspace');
     const { handleAddToCart, cartConflictModalProps } = useServiceCart();
@@ -29,17 +24,6 @@ const GoogleWorkspacePage = () => {
         planName: string,
         billingCycle: number
     ) => {
-        if (typeof Moengage?.track_event === 'function') {
-            const plan = plans.find(p => p.planId === planId);
-            const price = plan?.pricingDetails?.add?.[String(billingCycle)] ?? plan?.price ?? 0;
-            Moengage.track_event('google_workspace_plan_selected', {
-                plan_name: planName,
-                tenure: billingCycle,
-                price,
-                total_price: price * billingCycle,
-                seats: 1,
-            });
-        }
         const result = await handleAddToCart({
             itemType: 'google_workspace',
             productId,

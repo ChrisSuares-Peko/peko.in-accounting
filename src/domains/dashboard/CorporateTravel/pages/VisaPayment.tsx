@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import {
     Button,
@@ -122,19 +122,6 @@ const VisaPayment = () => {
     // Full payment: collect total visa cost (govt fees + service charges)
     // Partial payment: collect only service charges now; govt fees paid at embassy
     const payNow = (hasEmbassyPayment ? (visa?.totalPayNow ?? 0) : (visa?.price ?? 0)) * priceScaleFactor + addonTotal;
-
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            // Fires once, on arriving at this review step — no add-ons are selected yet at this
-            // point, so add_ons is always empty here (selecting one doesn't re-fire this event;
-            // the final selection is captured separately on visa_checkout).
-            Moengage.track_event('visa_review', {
-                add_ons: [],
-                pay_now_amount: payNow,
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     return (
         <Flex vertical gap={20} className="w-full pb-10">

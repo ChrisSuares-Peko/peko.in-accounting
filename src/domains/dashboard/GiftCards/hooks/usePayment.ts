@@ -58,19 +58,6 @@ export default function usePayment() {
                 const platformFee = baseSurcharge;
 
                 const total = (amount ? parseFloat(amount) : 0) + platformFee;
-                  const serviceDetails = {
-                brand_name: itemData.product_name,
-                amount: formData.amount,
-                mode: orderType,
-                quantity: parseFloat(formData.quantity),
-            };
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails,
-                })
-            );
-
 
                 const billSummary = [
                     { key: 'Service name', value: 'Gift Cards' },

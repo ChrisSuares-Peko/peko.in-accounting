@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { Col, Flex, Row, Typography } from 'antd';
 import { ReactSVG } from 'react-svg';
 
@@ -13,12 +11,6 @@ const { Text } = Typography;
 
 const Postpaid: React.FC = () => {
     const accessKey = accessKeys.postpaid;
-
-    useEffect(() => {
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('postpaid_started');
-        }
-    }, []);
 
     return (
         <Row>

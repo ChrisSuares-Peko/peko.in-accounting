@@ -32,9 +32,6 @@ export default function usePayment() {
         async (values: any) => {
             const { amount, mobileNumber, serviceProvider, circle } = values;
             dispatch(setPrepaid(values));
-            if (typeof Moengage?.track_event === 'function') {
-                Moengage.track_event('prepaid_recharge', { amount });
-            }
             const vendorBalance: JriBalanceResponse | false = await JRIVendorBalance({
                 userId: id,
                 userType: role,
@@ -123,17 +120,6 @@ export default function usePayment() {
                         navigatePath: `${paths.dashboard.mobileRecharge}/${paths.telecomPayments.prepaid}`,
                     })
                 );
-                sessionStorage.setItem(
-                    'service_details',
-                    JSON.stringify({
-                        serviceDetails: {
-                            service_provider: formattedServiceProvider,
-                            amount,
-                            circle: formattedProviderCircle,
-                            number: mobileNumber,
-                        },
-                    })
-                );
                 navigate(paths.dashboard.payments);
             }
         },
@@ -148,13 +134,6 @@ export default function usePayment() {
 
             const { serviceProvider, amount: enteredAmount, ...rest } = values;
             dispatch(setPostpaid(values));
-
-            if (typeof Moengage?.track_event === 'function') {
-                Moengage.track_event('postpaid_recharge', {
-                    service_provider: billerName || serviceProvider,
-                    number: Object.values(rest)[0] as string,
-                });
-            }
 
             const validEntries = Object.entries(rest).filter(([, v]) => v !== '');
             let customerParams = {};
@@ -221,15 +200,6 @@ export default function usePayment() {
                         url: 'payment/postpaid/payment',
                         earningCashbackAmount: Number(surchargeData && surchargeData?.corporateCashback) || 0,
                         navigatePath: `${paths.dashboard.mobileRecharge}/${paths.telecomPayments.postpaid}`,
-                    })
-                );
-                sessionStorage.setItem(
-                    'service_details',
-                    JSON.stringify({
-                        serviceDetails: {
-                            service_provider: billerName || serviceProvider,
-                            number: Object.values(rest)[0] as string,
-                        },
                     })
                 );
                 setIsLoading(false);
@@ -308,15 +278,6 @@ export default function usePayment() {
                             navigatePath: `${paths.dashboard.mobileRecharge}/${paths.telecomPayments.postpaid}`,
                         })
                     );
-                    sessionStorage.setItem(
-                        'service_details',
-                        JSON.stringify({
-                            serviceDetails: {
-                                service_provider: billerName || serviceProvider,
-                                number: Object.values(rest)[0] as string,
-                            },
-                        })
-                    );
                     setIsLoading(false);
                     navigate(paths.dashboard.payments);
                     return;
@@ -381,15 +342,6 @@ export default function usePayment() {
                         earningCashbackAmount: Number(surchargeData && surchargeData?.corporateCashback) || 0,
                         ...tightenWithChannelBound(minimumAmount, maximumAmount, channelBound),
                         navigatePath: `${paths.dashboard.mobileRecharge}/${paths.telecomPayments.postpaid}`,
-                    })
-                );
-                sessionStorage.setItem(
-                    'service_details',
-                    JSON.stringify({
-                        serviceDetails: {
-                            service_provider: billerName || serviceProvider,
-                            number: Object.values(rest)[0] as string,
-                        },
                     })
                 );
                 setIsLoading(false);

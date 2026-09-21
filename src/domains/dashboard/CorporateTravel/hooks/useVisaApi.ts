@@ -576,21 +576,6 @@ export const useVisaPayment = () => {
                     earningCashbackAmount: 0,
                 })
             );
-            // Feeds the generic checkout mechanism in payments/hooks/usePaymentApi.ts, which fires
-            // visa_checkout (add_ons/pay_now_amount here, plus mode/coupon_code_used/total_amount
-            // from that hook) and later seeds visa_payment_result on the payments success page.
-            // moengage_prefix is used because billSummary above keys this as 'Service Name'
-            // (capital N), which doesn't match what that hook looks up ('Service name').
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails: {
-                        moengage_prefix: 'visa',
-                        add_ons: selectedAddOns.map(a => a.label).join(', '),
-                        pay_now_amount: totalPayNow,
-                    },
-                })
-            );
             navigate(paths.dashboard.payments);
         },
         [dispatch, navigate, role, id, user]

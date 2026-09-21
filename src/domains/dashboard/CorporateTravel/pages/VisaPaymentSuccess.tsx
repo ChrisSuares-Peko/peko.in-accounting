@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { CheckOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Typography } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -14,24 +12,6 @@ const VisaPaymentSuccess = () => {
     const location = useLocation();
     const reduxOrderNumber = useAppSelector(state => state.reducer.visa.orderNumber);
     const orderNumber = (location.state as any)?.orderNumber ?? reduxOrderNumber ?? '';
-
-    useEffect(() => {
-        // Visa has its own dedicated success page (see the accessKeys.visa branch in
-        // payments/hooks/usePaymentApi.ts, which routes here instead of the generic
-        // payments success page) — so visa_payment_result has to be fired here, reading the
-        // same paymentResult sessionStorage payload the generic checkout mechanism seeded.
-        const paymentResultRaw = sessionStorage.getItem('paymentResult');
-        if (paymentResultRaw && typeof Moengage?.track_event === 'function') {
-            try {
-                const paymentResult = JSON.parse(paymentResultRaw);
-                Moengage.track_event('visa_payment_result', {
-                    status: 'success',
-                    total_amount: paymentResult.total_amount,
-                });
-            } catch (_) { /* ignore parse errors */ }
-        }
-        sessionStorage.removeItem('paymentResult');
-    }, []);
 
     return (
         <Flex

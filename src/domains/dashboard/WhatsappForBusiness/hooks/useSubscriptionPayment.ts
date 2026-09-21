@@ -155,20 +155,6 @@ export default function useWhatsAppSubscriptionPayment() {
                     })
                 );
 
-                // Feeds the generic checkout mechanism in payments/hooks/usePaymentApi.ts (it runs
-                // before that hook's isWhatsAppSubscription branch takes over). moengage_prefix
-                // overrides SERVICE_NAME_MAP's 'WhatsApp for Business' -> 'wa' mapping, which
-                // predates this event and doesn't match the whatsapp_for_business_* naming here.
-                sessionStorage.setItem(
-                    'service_details',
-                    JSON.stringify({
-                        serviceDetails: {
-                            moengage_prefix: 'whatsapp_for_business',
-                            whatsapp_for_business_plan: duration,
-                        },
-                    })
-                );
-
                 // Navigate to the payments page
                 navigate(paths.dashboard.payments);
 

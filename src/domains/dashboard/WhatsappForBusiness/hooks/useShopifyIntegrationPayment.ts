@@ -73,17 +73,6 @@ export default function useShopifyIntegrationPayment() {
                 })
             );
 
-            // Every checkout-initiating flow must (re)set this — the generic checkout mechanism in
-            // payments/hooks/usePaymentApi.ts only clears it once a checkout event actually fires,
-            // so skipping this here would let a leftover value from an abandoned purchase on a
-            // totally different service (e.g. Gift Cards) get picked up as this checkout's data.
-            sessionStorage.setItem(
-                'service_details',
-                JSON.stringify({
-                    serviceDetails: { moengage_prefix: 'whatsapp_for_business' },
-                })
-            );
-
             navigate(paths.dashboard.payments);
             dispatch(resetWhatsappBusinessState());
         },

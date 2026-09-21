@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import {
@@ -83,7 +83,6 @@ const CartPage = () => {
     const { id, role } = useAppSelector(state => state.reducer.auth);
 
     const [updatingId, setUpdatingId] = useState<string | null>(null);
-    const hasTrackedCartViewedRef = useRef(false);
 
     useEffect(() => {
         fetchCart();
@@ -100,24 +99,6 @@ const CartPage = () => {
     const workspaceItems = items.filter(i => i.itemType === 'google_workspace');
 
     const total = parseFloat((cartData?.itemsTotalAmount ?? 0).toFixed(2));
-
-    // Fires once, the first time the cart finishes loading — not on every subsequent
-    // cart mutation (billing cycle change, item removal, etc. all re-fetch cartData).
-    useEffect(() => {
-        if (!cartData || hasTrackedCartViewedRef.current) return;
-        hasTrackedCartViewedRef.current = true;
-        if (typeof Moengage?.track_event === 'function') {
-            Moengage.track_event('domain_cart_viewed', {
-                domain: domainItems.map(i => i.productName),
-                total_price: total,
-                ...(workspaceItems.length > 0 && {
-                    seats: getWorkspaceSeats(workspaceItems[0]),
-                    tenure: workspaceItems[0].billingCycle,
-                }),
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cartData]);
 
     const updateDetails = async (
         productId: string,

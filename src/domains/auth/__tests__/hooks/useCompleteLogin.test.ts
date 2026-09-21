@@ -50,7 +50,6 @@ vi.stubGlobal(
         close = vi.fn();
     }
 );
-vi.stubGlobal('Moengage', undefined);
 
 const baseResponse = {
     token: 't',

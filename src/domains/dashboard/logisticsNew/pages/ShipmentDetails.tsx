@@ -92,20 +92,6 @@ const ShipmentDetails = () => {
                 }}
                 enableReinitialize
                 onSubmit={async values => {
-                    const serviceDetails = {
-                        vendor_name: selectedCompany?.courierName,
-                        origin_city: originCity?.city,
-                        destination_city: destinationCity?.city,
-                        width,
-                        weight,
-                        length,
-                        height,
-                        price: selectedCompany?.price,
-                    };
-                    sessionStorage.setItem(
-                        'service_details',
-                        JSON.stringify({ serviceDetails })
-                    );
                     setIsCheckingPan(true);
                     const panAlreadyUploaded = await checkBusinessPanApi({ userType: role, userId: id });
                     setIsCheckingPan(false);
