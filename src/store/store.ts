@@ -16,7 +16,7 @@ import storage from 'redux-persist/lib/storage';
 import bulkProductsReducer from '@domains/admin/manage/slices/bulkProducts';
 import bulkUploadCommon from '@domains/admin/manage/slices/bulkUpload';
 import { forgotpasswordReducer } from '@domains/auth/slices/forgotpasswordSlice';
-import loginReducer from '@domains/auth/slices/loginSlice';
+import loginReducer, { MOCK_AUTHENTICATED_USER } from '@domains/auth/slices/loginSlice';
 import passwordPolicyReducer from '@domains/auth/slices/passwordPolicySlice';
 import registrationReducer from '@domains/auth/slices/registerSlice';
 import airlinesFormReducer from '@domains/dashboard/Airline/slices/airlineSlice';
@@ -124,6 +124,22 @@ import apiReducer from '../slices/apiSlice';
 const persistConfig = {
     key: 'root',
     storage,
+    // Login flow removed for this prototype: `auth` is persisted (see whitelist
+    // below), so a browser that already has an old `auth` value in localStorage —
+    // e.g. from testing before this change, with isAuthenticated: false or some
+    // other role — would have that stale value rehydrated straight over
+    // loginSlice's initialState on load, silently undoing it and re-triggering
+    // guards downstream (e.g. CorporateUserGuard redirecting a stale
+    // role: 'system_user' into the system-user portal, where RoleGuard then denies
+    // access because there's no real service data). Force `auth` to the same mock
+    // authenticated user on every rehydration so that can't happen, regardless of
+    // whatever's already sitting in a given browser's storage.
+    migrate: (state: any) => {
+        if (state) {
+            state.auth = MOCK_AUTHENTICATED_USER;
+        }
+        return Promise.resolve(state);
+    },
     whitelist: [
         'auth',
         'payment',

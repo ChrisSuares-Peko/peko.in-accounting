@@ -39,7 +39,15 @@ interface LoginState {
 // gating on a real session. There's deliberately no real token: useUserInfo and
 // ApiClient's interceptors treat a missing token as "skip network auth" rather than
 // a session-expiry, so this doesn't bounce through /session-expired either.
-const initialState: LoginState = {
+//
+// Exported (not just used as this slice's initialState) because `auth` is a
+// persisted key (see store.ts's persistConfig.whitelist): a browser that already
+// has an old `auth` value sitting in localStorage — e.g. from testing before this
+// change, with isAuthenticated: false or some other role — would have that stale
+// value rehydrated straight over this initialState on load, silently undoing it.
+// store.ts's persistConfig.migrate imports this same object and forces `auth` to
+// it on every rehydration so that can't happen.
+export const MOCK_AUTHENTICATED_USER: LoginState = {
     token: '',
     refreshToken: '',
     sessionId: '',
@@ -59,6 +67,8 @@ const initialState: LoginState = {
     activeSubRole: null,
     showPrivacyPolicyModal: false,
 };
+
+const initialState: LoginState = MOCK_AUTHENTICATED_USER;
 
 export const loginSlice = createSlice({
     name: 'login',
