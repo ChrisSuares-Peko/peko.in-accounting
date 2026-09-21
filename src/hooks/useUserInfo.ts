@@ -22,7 +22,7 @@ export default function useUserInfo() {
     const location = useLocation();
     const { pathname } = location;
 
-    const { role, id } = useAppSelector(state => state.reducer.auth);
+    const { role, id, token } = useAppSelector(state => state.reducer.auth);
     const { user } = useAppSelector(state => state.reducer.user);
     const { services } = useAppSelector(state => state.reducer.services);
     const [isLoading, setIsLoading] = useState(true);
@@ -95,18 +95,29 @@ export default function useUserInfo() {
     }, [hasNavigated]);
 
     useEffect(() => {
+        // No token means there's no real session to fetch (e.g. the login flow is
+        // disabled for this prototype) — skip the network call instead of letting it
+        // fail and stop the layout from spinning forever.
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
         if (user === null) {
             getUserData();
         }
-    }, [getUserData, user]);
+    }, [getUserData, user, token]);
 
     useEffect(() => {
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
         if (services === null) {
             getUserServicesData();
         } else {
             setIsLoading(false);
         }
-    }, [getUserServicesData, services]);
+    }, [getUserServicesData, services, token]);
 
     return { isLoading, getUserServicesData, getUserData };
 }

@@ -1,5 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
+import { RoleName, UserRole } from '@customtypes/general';
+
 interface LoginState {
     token: string;
     refreshToken: string;
@@ -32,15 +34,22 @@ interface LoginState {
     autoLogin?: boolean;
 }
 
+// Login flow removed for this prototype (see AuthGuard/CorporateAccessGuard/router
+// changes) — the app always boots as an authenticated Corporate user instead of
+// gating on a real session. There's deliberately no real token: useUserInfo and
+// ApiClient's interceptors treat a missing token as "skip network auth" rather than
+// a session-expiry, so this doesn't bounce through /session-expired either.
 const initialState: LoginState = {
     token: '',
     refreshToken: '',
     sessionId: '',
-    isAuthenticated: false,
-    role: '',
+    isAuthenticated: true,
+    role: UserRole.CORPORATE,
     id: 0,
-    username: '',
-    roleName: '',
+    username: 'prototype-user',
+    name: 'Prototype User',
+    email: 'prototype@peko.in',
+    roleName: RoleName.CORPORATE,
     redirectUrl: '',
     packageName: '',
     acs_user_id: '',

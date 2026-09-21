@@ -91,6 +91,12 @@ ApiClient.interceptors.request.use(
             } catch (error) {
                 triggerSessionExpired();
             }
+        } else if (!token && !refreshToken) {
+            // Never had any credentials at all — e.g. the login flow is disabled for
+            // this prototype (see loginSlice's initialState). Previously unreachable,
+            // since AuthGuard redirected to /login before any protected page could
+            // mount and fire a request. Let it proceed unauthenticated rather than
+            // hard-redirecting to /session-expired, which would just loop back here.
         } else {
             triggerSessionExpired();
         }
@@ -119,7 +125,15 @@ ApiClient.interceptors.response.use(
             return Promise.reject(error);
         }
         if (data.message === 'invalid token' || data.responseCode === RESPONSE_CODE.INVALID_TOKEN) {
-            triggerSessionExpired();
+            // Only treat this as a real session expiring — if there was never a token
+            // to begin with (login flow disabled for this prototype), don't
+            // hard-redirect; just let the caller's own error handling take over.
+            // Optional-chained defensively: some callers (e.g. tests) mock the store
+            // with partial state.
+            const token = (store.getState() as RootState)?.reducer?.auth?.token;
+            if (token) {
+                triggerSessionExpired();
+            }
         } else if (data.responseCode === RESPONSE_CODE.NOT_FOUND) {
             window.location.href = '/404';
         } else if (data.responseCode === RESPONSE_CODE.PRIVACY_POLICY) {

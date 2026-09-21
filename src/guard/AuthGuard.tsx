@@ -3,20 +3,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserRole } from '@customtypes/general';
-import { useAppDispatch, useAppSelector } from '@src/hooks/store';
+import { useAppSelector } from '@src/hooks/store';
 import { paths } from '@src/routes/paths';
-
-import { setRedirectUrl } from '../domains/auth/slices/loginSlice';
 
 type AuthGuardProps = {
     children: React.ReactNode;
 };
 
+// Login flow removed for this prototype: the unauthenticated -> /auth/login redirect
+// that used to live here has been dropped (auth state is now hardcoded to
+// authenticated, see loginSlice's initialState). The SYSTEM-role landing-page
+// redirect below is unrelated to login and is kept as-is.
 export default function AuthGuard({ children }: AuthGuardProps) {
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    const dispatch = useAppDispatch();
-    const { isAuthenticated, role } = useAppSelector(state => state.reducer.auth);
+    const { role } = useAppSelector(state => state.reducer.auth);
     const { services } = useAppSelector(state => state.reducer.services);
     const [checked, setChecked] = useState(false);
 
@@ -26,26 +27,20 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     const firstRoute = services?.data?.find(obj => obj.hasAccess === true);
 
     const check = useCallback(() => {
-        if (!isAuthenticated) {
-            dispatch(setRedirectUrl(pathname));
-            const href = paths.auth.jwt.login;
-            navigate(href, { replace: true });
-        } else {
-            if (
-                firstRoute &&
-                firstRoute.serviceCategory !== 'Dashboard' &&
-                pathname.includes('dashboard') &&
-                role === UserRole.SYSTEM
-            ) {
-                const path = `${paths.systemUser.index}/${firstRoute.serviceCategory
-                    .toLowerCase()
-                    .replace(/\s+/g, '-')}`;
-                navigate(path, { replace: true });
-                return;
-            }
-            setChecked(true);
+        if (
+            firstRoute &&
+            firstRoute.serviceCategory !== 'Dashboard' &&
+            pathname.includes('dashboard') &&
+            role === UserRole.SYSTEM
+        ) {
+            const path = `${paths.systemUser.index}/${firstRoute.serviceCategory
+                .toLowerCase()
+                .replace(/\s+/g, '-')}`;
+            navigate(path, { replace: true });
+            return;
         }
-    }, [isAuthenticated, dispatch, pathname, navigate, firstRoute, role]);
+        setChecked(true);
+    }, [pathname, navigate, firstRoute, role]);
 
     useEffect(() => {
         check();
