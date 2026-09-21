@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import AntdConfig from './antd.config';
+import DataModeToggle from './components/molecular/dataModeToggle/DataModeToggle';
 import useCustomNotification from './hooks/useCustomNotification';
 import { useScrollToTop } from './hooks/useScrollToTop';
 import Router from './routes/sections';
@@ -39,6 +40,7 @@ function App() {
         <AntdConfig>
             {contextHolder}
             <Router />
+            <DataModeToggle />
         </AntdConfig>
     );
 }

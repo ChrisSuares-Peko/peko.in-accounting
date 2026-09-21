@@ -82,6 +82,7 @@ import workReducer from '@src/domains/dashboard/Works/slices/worksSlice';
 import activeTabReducer from '@src/slices/activeTabSlice';
 import callReducer from '@src/slices/callSlice';
 import chatReducer from '@src/slices/chatSlice';
+import dataModeReducer from '@src/slices/dataModeSlice';
 import loaderReducer from '@src/slices/loaderSlice';
 import servicesReducer from '@src/slices/servicesSlice';
 import subscriptionsReducer from '@src/slices/subscriptionSlice';
@@ -149,6 +150,7 @@ const persistConfig = {
         'rfqDraft',
         'vendorDraft',
         'busTicket',
+        'dataMode',
     ],
 };
 
@@ -239,6 +241,7 @@ const rootReducer = combineReducers({
     rfqDraft: rfqDraftReducer,
     vendorDraft: vendorDraftReducer,
     corporateCards: corporateCardsReducer,
+    dataMode: dataModeReducer,
 });
 
 const reducer = persistReducer(persistConfig, rootReducer);
