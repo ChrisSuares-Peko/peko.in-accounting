@@ -19,10 +19,8 @@ import useSurchargeDetails from '../hooks/useSurchargeApi';
 import useTraceIdTimer from '../hooks/useTraceIdTimer';
 import { setPaymentDetails } from '../slices/airlineSlice';
 import { AllFareQuote } from '../types/fareRules';
-import { retrieveAirlineName, retrieveAirportName } from '../utils/airlineData';
+import { retrieveAirlineName } from '../utils/airlineData';
 import { isMealBaggageRequired } from '../utils/ancillaries';
-import { retrieveFlightClass } from '../utils/getFlightClass';
-import { tripMethods } from '../utils/options';
 
 type props = {
     formRef: React.MutableRefObject<any>;

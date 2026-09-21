@@ -181,8 +181,6 @@ export default function useForm() {
         hotelResponse.HotelDetails,
         hotelsRequest.CheckIn,
         hotelsRequest.CheckOut,
-        hotelsRequest.City,
-        hotelsRequest.cityName,
         hotelsRequest.GuestNationality,
         hotelsRequest.rooms,
         bookingdata.Rooms,

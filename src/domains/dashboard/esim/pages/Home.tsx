@@ -26,7 +26,6 @@ import usePayment from '../hooks/usePayment';
 import { clearPendingSelections, setPendingSelections } from '../slice/esimSlice';
 import { PurchasingFor } from '../types';
 import { TravelType } from '../types/eSIM';
-import { convertMBtoGB } from '../utils/helperFunction';
 import '../assets/style.css';
 
 const { Text } = Typography;

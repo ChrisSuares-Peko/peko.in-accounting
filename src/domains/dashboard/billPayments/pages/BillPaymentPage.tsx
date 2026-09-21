@@ -15,36 +15,34 @@ interface Props {
     serviceCategory: BBPSCategoryName;
 }
 
-const BillPaymentPage: React.FC<Props> = ({ title, accessKeyName, serviceCategory }: Props) => {
-    return (
-        <Row>
-            <Col xl={24}>
-                <Flex justify="space-between">
-                    <Text className="font-medium text-lg sm:text-xl">{title}</Text>
-                    <Flex vertical gap={15}>
-                        <ReactSVG
-                            className="ml-16"
-                            src={BharathConnect}
-                            beforeInjection={svg => {
-                                svg.setAttribute('style', 'width: 85px; height: 40px;');
-                            }}
-                        />
-                    </Flex>
+const BillPaymentPage: React.FC<Props> = ({ title, accessKeyName, serviceCategory }: Props) => (
+    <Row>
+        <Col xl={24}>
+            <Flex justify="space-between">
+                <Text className="font-medium text-lg sm:text-xl">{title}</Text>
+                <Flex vertical gap={15}>
+                    <ReactSVG
+                        className="ml-16"
+                        src={BharathConnect}
+                        beforeInjection={svg => {
+                            svg.setAttribute('style', 'width: 85px; height: 40px;');
+                        }}
+                    />
                 </Flex>
-            </Col>
-            <Col xl={13} className="w-full xl:sticky xl:top-0 h-fit mt-5">
-                <Flex vertical gap={30}>
-                    <FormDetails serviceCategory={serviceCategory} accessKeyName={accessKeyName} />
-                </Flex>
-            </Col>
-            <Col
-                xl={{ span: 9, offset: 2 }}
-                className="w-full sm:bg-gray-50 rounded-3xl sm:p-6 mt-10 sm:mt-5 xl:mt-5"
-            >
-                <BeneficiariesList accessKeyName={accessKeyName} />
-            </Col>
-        </Row>
-    );
-};
+            </Flex>
+        </Col>
+        <Col xl={13} className="w-full xl:sticky xl:top-0 h-fit mt-5">
+            <Flex vertical gap={30}>
+                <FormDetails serviceCategory={serviceCategory} accessKeyName={accessKeyName} />
+            </Flex>
+        </Col>
+        <Col
+            xl={{ span: 9, offset: 2 }}
+            className="w-full sm:bg-gray-50 rounded-3xl sm:p-6 mt-10 sm:mt-5 xl:mt-5"
+        >
+            <BeneficiariesList accessKeyName={accessKeyName} />
+        </Col>
+    </Row>
+);
 
 export default BillPaymentPage;

@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Card, Col, Flex, Image, Row, Tag, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from '@src/hooks/store';
+import { useAppDispatch } from '@src/hooks/store';
 import { paths } from '@src/routes/paths';
 import { formatNumberWithLocalString } from '@utils/priceFormat';
 

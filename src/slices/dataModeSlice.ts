@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// eslint-disable-next-line import/no-cycle
 import type { RootState } from '@store/store';
 
 export type DataMode = 'dummy' | 'empty';
