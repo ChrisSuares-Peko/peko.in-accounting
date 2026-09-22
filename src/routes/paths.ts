@@ -312,6 +312,12 @@ export const paths = {
         anandTraders: 'books/anand-traders',
         rentExpense: 'books/rent-expense',
         interestReceived: 'books/interest-received',
+        trialBalance: 'trial-balance',
+        pnl: 'pnl',
+        // Distinct from `balanceSheet` above (the existing real
+        // financial-statements/balance-sheet page) — this is the new
+        // Books-of-Accounts-derived Balance Sheet report.
+        balanceSheetReport: 'balance-sheet',
         transactions: 'transactions',
         financialStatements: 'financial-statements',
         profitLoss: 'financial-statements/profit-loss',

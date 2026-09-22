@@ -1,5 +1,6 @@
 import {
     ApartmentOutlined,
+    AuditOutlined,
     BarChartOutlined,
     BookOutlined,
     CalendarOutlined,
@@ -13,7 +14,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
 
-export type AccountingSectionTabKey = 'dashboard' | 'day-book' | 'ledgers' | 'books-of-accounts';
+export type AccountingSectionTabKey =
+    | 'dashboard'
+    | 'day-book'
+    | 'ledgers'
+    | 'books-of-accounts'
+    | 'trial-balance'
+    | 'pnl'
+    | 'balance-sheet';
 
 interface AccountingSectionTabsProps {
     activeKey: AccountingSectionTabKey;
@@ -56,13 +64,16 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
         key: 'trial-balance',
         label: 'Trial Balance',
         icon: <FundOutlined />,
-        disabled: true,
     },
     {
-        key: 'pnl-balance-sheet',
-        label: 'P&L and Balance Sheet',
+        key: 'pnl',
+        label: 'P&L',
         icon: <LineChartOutlined />,
-        disabled: true,
+    },
+    {
+        key: 'balance-sheet',
+        label: 'Balance Sheet',
+        icon: <AuditOutlined />,
     },
     {
         key: 'chart-of-accounts',
@@ -86,6 +97,9 @@ const TAB_ROUTES: Record<AccountingSectionTabKey, string> = {
     'day-book': `${paths.dashboard.accounting}/${paths.accounting.dayBook}`,
     ledgers: `${paths.dashboard.accounting}/${paths.accounting.ledgers}`,
     'books-of-accounts': `${paths.dashboard.accounting}/${paths.accounting.books}`,
+    'trial-balance': `${paths.dashboard.accounting}/${paths.accounting.trialBalance}`,
+    pnl: `${paths.dashboard.accounting}/${paths.accounting.pnl}`,
+    'balance-sheet': `${paths.dashboard.accounting}/${paths.accounting.balanceSheetReport}`,
 };
 
 const AccountingSectionTabs = ({ activeKey }: AccountingSectionTabsProps) => {
