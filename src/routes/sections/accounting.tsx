@@ -35,6 +35,18 @@ const OtherIncomeLedgerLanding = lazy(
 const OtherExpenseLedgerLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/OtherExpenseLedgerLanding')
 );
+const BooksOfAccountsLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/BooksOfAccountsLanding')
+);
+const AnandTradersLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/AnandTradersLedgerLanding')
+);
+const RentExpenseLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/RentExpenseLedgerLanding')
+);
+const InterestReceivedLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/InterestReceivedLedgerLanding')
+);
 const DayBookLanding = lazy(() => import('@domains/dashboard/accounting/pages/DayBookLanding'));
 const TransactionsLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/TransactionsLanding')
@@ -80,6 +92,10 @@ export const accountingRoutes = [
     { element: <PurchasesLedgerLanding />, path: paths.accounting.purchases },
     { element: <OtherIncomeLedgerLanding />, path: paths.accounting.otherIncome },
     { element: <OtherExpenseLedgerLanding />, path: paths.accounting.otherExpense },
+    { element: <BooksOfAccountsLanding />, path: paths.accounting.books },
+    { element: <AnandTradersLedgerLanding />, path: paths.accounting.anandTraders },
+    { element: <RentExpenseLedgerLanding />, path: paths.accounting.rentExpense },
+    { element: <InterestReceivedLedgerLanding />, path: paths.accounting.interestReceived },
     { element: <DayBookLanding />, path: paths.accounting.dayBook },
     { element: <TransactionsLanding />, path: paths.accounting.transactions },
     { element: <FinancialStatementsLanding />, path: paths.accounting.financialStatements },

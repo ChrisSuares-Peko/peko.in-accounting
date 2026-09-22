@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
 
-export type AccountingSectionTabKey = 'dashboard' | 'day-book' | 'ledgers';
+export type AccountingSectionTabKey = 'dashboard' | 'day-book' | 'ledgers' | 'books-of-accounts';
 
 interface AccountingSectionTabsProps {
     activeKey: AccountingSectionTabKey;
@@ -51,7 +51,6 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
         key: 'books-of-accounts',
         label: 'Books of Accounts',
         icon: <UnorderedListOutlined />,
-        disabled: true,
     },
     {
         key: 'trial-balance',
@@ -82,13 +81,11 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
 // Maps each navigable tab key to the full route it targets, mirroring the
 // `${paths.dashboard.accounting}/${paths.accounting.x}` pattern already used
 // elsewhere for accounting sub-routes (e.g. featureCards in utils/data.ts).
-// 'day-book' targets a route that doesn't exist yet (added in a later prompt) —
-// harmless until then, since Tabs only navigates on a click and nothing points at
-// this component with activeKey="day-book" yet either.
 const TAB_ROUTES: Record<AccountingSectionTabKey, string> = {
     dashboard: paths.dashboard.accounting,
     'day-book': `${paths.dashboard.accounting}/${paths.accounting.dayBook}`,
     ledgers: `${paths.dashboard.accounting}/${paths.accounting.ledgers}`,
+    'books-of-accounts': `${paths.dashboard.accounting}/${paths.accounting.books}`,
 };
 
 const AccountingSectionTabs = ({ activeKey }: AccountingSectionTabsProps) => {
