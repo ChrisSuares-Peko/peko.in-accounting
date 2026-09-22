@@ -11,6 +11,30 @@ const AccountingDashboardLanding = lazy(
 );
 const LedgersLanding = lazy(() => import('@domains/dashboard/accounting/pages/LedgersLanding'));
 const CashBankLanding = lazy(() => import('@domains/dashboard/accounting/pages/CashBankLanding'));
+const StockLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/StockLedgerLanding')
+);
+const AssetsLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/AssetsLedgerLanding')
+);
+const LiabilitiesLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/LiabilitiesLedgerLanding')
+);
+const EquityLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/EquityLedgerLanding')
+);
+const SalesLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/SalesLedgerLanding')
+);
+const PurchasesLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/PurchasesLedgerLanding')
+);
+const OtherIncomeLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/OtherIncomeLedgerLanding')
+);
+const OtherExpenseLedgerLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/OtherExpenseLedgerLanding')
+);
 const DayBookLanding = lazy(() => import('@domains/dashboard/accounting/pages/DayBookLanding'));
 const TransactionsLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/TransactionsLanding')
@@ -48,6 +72,14 @@ export const accountingRoutes = [
     { element: <AccountingDashboardLanding />, index: true },
     { element: <LedgersLanding />, path: paths.accounting.ledgers },
     { element: <CashBankLanding />, path: paths.accounting.cashBank },
+    { element: <StockLedgerLanding />, path: paths.accounting.stock },
+    { element: <AssetsLedgerLanding />, path: paths.accounting.assets },
+    { element: <LiabilitiesLedgerLanding />, path: paths.accounting.liabilities },
+    { element: <EquityLedgerLanding />, path: paths.accounting.equity },
+    { element: <SalesLedgerLanding />, path: paths.accounting.sales },
+    { element: <PurchasesLedgerLanding />, path: paths.accounting.purchases },
+    { element: <OtherIncomeLedgerLanding />, path: paths.accounting.otherIncome },
+    { element: <OtherExpenseLedgerLanding />, path: paths.accounting.otherExpense },
     { element: <DayBookLanding />, path: paths.accounting.dayBook },
     { element: <TransactionsLanding />, path: paths.accounting.transactions },
     { element: <FinancialStatementsLanding />, path: paths.accounting.financialStatements },
