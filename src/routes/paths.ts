@@ -299,6 +299,7 @@ export const paths = {
         index: 'accounting',
         dayBook: 'day-book',
         ledgers: 'ledgers',
+        cashBank: 'ledgers/cash-bank',
         transactions: 'transactions',
         financialStatements: 'financial-statements',
         profitLoss: 'financial-statements/profit-loss',
