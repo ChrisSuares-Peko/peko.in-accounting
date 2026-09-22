@@ -4,9 +4,12 @@ import { paths } from '../paths';
 
 // -----------------------------------------------------------------------
 
-const AccountingLanding = lazy(
-    () => import('@domains/dashboard/accounting/pages/AccountingLanding')
+// AccountingLanding (the old index-route content) is left in place but unrouted —
+// AccountingDashboardLanding is the new index route.
+const AccountingDashboardLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/AccountingDashboardLanding')
 );
+const LedgersLanding = lazy(() => import('@domains/dashboard/accounting/pages/LedgersLanding'));
 const TransactionsLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/TransactionsLanding')
 );
@@ -40,7 +43,8 @@ const InsightsLanding = lazy(() => import('@domains/dashboard/accounting/pages/I
 // -----------------------------------------------------------------------
 
 export const accountingRoutes = [
-    { element: <AccountingLanding />, index: true },
+    { element: <AccountingDashboardLanding />, index: true },
+    { element: <LedgersLanding />, path: paths.accounting.ledgers },
     { element: <TransactionsLanding />, path: paths.accounting.transactions },
     { element: <FinancialStatementsLanding />, path: paths.accounting.financialStatements },
     { element: <ProfitLossLanding />, path: paths.accounting.profitLoss },

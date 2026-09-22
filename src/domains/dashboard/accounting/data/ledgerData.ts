@@ -78,6 +78,7 @@ export const DUMMY_LEDGER_DATA: LedgerLineItem[] = [
         debit: 640000,
         credit: 575000,
         closingBalance: 245000,
+        category: 'receivable',
     },
     {
         id: 'office-equipment-fixed-asset',
@@ -100,6 +101,7 @@ export const DUMMY_LEDGER_DATA: LedgerLineItem[] = [
         debit: 118500,
         credit: 100000,
         closingBalance: 76500,
+        category: 'payable',
     },
     {
         id: 'gst-payable',

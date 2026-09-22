@@ -24,4 +24,8 @@ export interface LedgerLineItem {
     debit: number;
     credit: number;
     closingBalance: number;
+    // Finer-grained tag within a head, for rollups that need to isolate trade
+    // receivables/payables from other assets/liabilities (fixed assets, GST/TDS
+    // payable, etc.) — only set on the line items it actually applies to.
+    category?: 'receivable' | 'payable';
 }

@@ -297,6 +297,7 @@ export const paths = {
     },
     accounting: {
         index: 'accounting',
+        ledgers: 'ledgers',
         transactions: 'transactions',
         financialStatements: 'financial-statements',
         profitLoss: 'financial-statements/profit-loss',
