@@ -4,9 +4,23 @@ import {
     ArrowDownOutlined,
     ArrowUpOutlined,
     FileTextOutlined,
+    PlusOutlined,
     TeamOutlined,
 } from '@ant-design/icons';
-import { Avatar, Card, Col, Empty, List, Row, Statistic, Table, Tag, Typography, theme } from 'antd';
+import {
+    Avatar,
+    Button,
+    Card,
+    Col,
+    Empty,
+    List,
+    Row,
+    Statistic,
+    Table,
+    Tag,
+    Typography,
+    theme,
+} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 
@@ -115,13 +129,22 @@ const AccountingDashboardLanding = () => {
                 <AccountingSectionTabs activeKey="dashboard" />
             </Col>
             <Col span={24}>
-                <Title level={4} className="!mb-0">
-                    Dashboard
-                </Title>
-                <Text type="secondary">
-                    A snapshot of your books — balances, recent activity, and what needs your
-                    attention.
-                </Text>
+                <Row justify="space-between" align="middle" gutter={[16, 16]}>
+                    <Col>
+                        <Title level={4} className="!mb-0">
+                            Dashboard
+                        </Title>
+                        <Text type="secondary">
+                            A snapshot of your books — balances, recent activity, and what needs
+                            your attention.
+                        </Text>
+                    </Col>
+                    <Col>
+                        <Button type="primary" icon={<PlusOutlined />}>
+                            Add New Entry
+                        </Button>
+                    </Col>
+                </Row>
             </Col>
             <Col span={24}>
                 <Row gutter={16}>

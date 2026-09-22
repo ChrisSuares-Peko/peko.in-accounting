@@ -1,4 +1,5 @@
 import {
+    ApartmentOutlined,
     BarChartOutlined,
     BookOutlined,
     CalendarOutlined,
@@ -12,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
 
-export type AccountingSectionTabKey = 'dashboard' | 'ledgers';
+export type AccountingSectionTabKey = 'dashboard' | 'day-book' | 'ledgers';
 
 interface AccountingSectionTabsProps {
     activeKey: AccountingSectionTabKey;
@@ -37,19 +38,18 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
         icon: <DashboardOutlined />,
     },
     {
+        key: 'day-book',
+        label: 'Day Book',
+        icon: <CalendarOutlined />,
+    },
+    {
         key: 'ledgers',
         label: 'Ledgers',
         icon: <BookOutlined />,
     },
     {
-        key: 'day-book',
-        label: 'Day Book',
-        icon: <CalendarOutlined />,
-        disabled: true,
-    },
-    {
-        key: 'chart-and-books',
-        label: 'Chart & Books of Accounts',
+        key: 'books-of-accounts',
+        label: 'Books of Accounts',
         icon: <UnorderedListOutlined />,
         disabled: true,
     },
@@ -66,6 +66,12 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
         disabled: true,
     },
     {
+        key: 'chart-of-accounts',
+        label: 'Chart of Accounts',
+        icon: <ApartmentOutlined />,
+        disabled: true,
+    },
+    {
         key: 'reports-analysis',
         label: 'Reports/Analysis',
         icon: <BarChartOutlined />,
@@ -76,8 +82,12 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
 // Maps each navigable tab key to the full route it targets, mirroring the
 // `${paths.dashboard.accounting}/${paths.accounting.x}` pattern already used
 // elsewhere for accounting sub-routes (e.g. featureCards in utils/data.ts).
+// 'day-book' targets a route that doesn't exist yet (added in a later prompt) —
+// harmless until then, since Tabs only navigates on a click and nothing points at
+// this component with activeKey="day-book" yet either.
 const TAB_ROUTES: Record<AccountingSectionTabKey, string> = {
     dashboard: paths.dashboard.accounting,
+    'day-book': `${paths.dashboard.accounting}/${paths.accounting.dayBook}`,
     ledgers: `${paths.dashboard.accounting}/${paths.accounting.ledgers}`,
 };
 

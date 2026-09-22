@@ -10,6 +10,7 @@ const AccountingDashboardLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/AccountingDashboardLanding')
 );
 const LedgersLanding = lazy(() => import('@domains/dashboard/accounting/pages/LedgersLanding'));
+const DayBookLanding = lazy(() => import('@domains/dashboard/accounting/pages/DayBookLanding'));
 const TransactionsLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/TransactionsLanding')
 );
@@ -45,6 +46,7 @@ const InsightsLanding = lazy(() => import('@domains/dashboard/accounting/pages/I
 export const accountingRoutes = [
     { element: <AccountingDashboardLanding />, index: true },
     { element: <LedgersLanding />, path: paths.accounting.ledgers },
+    { element: <DayBookLanding />, path: paths.accounting.dayBook },
     { element: <TransactionsLanding />, path: paths.accounting.transactions },
     { element: <FinancialStatementsLanding />, path: paths.accounting.financialStatements },
     { element: <ProfitLossLanding />, path: paths.accounting.profitLoss },
