@@ -27,7 +27,14 @@ const initialState: ApiState = {
         roleName: MOCK_AUTHENTICATED_USER.roleName,
         username: MOCK_AUTHENTICATED_USER.username,
         logo: '', // no mock image — header falls back to a first-letter avatar
-        productTour: { dashboard: true, payroll: true } satisfies ProductTour,
+        // false = "no tour pending" on both the dashboard (Home.tsx) and payroll
+        // (Payroll/Dash.tsx) product tours — antd's own <Tour> component, gated by
+        // this field. Previously set to `true` here on the (wrong) assumption that
+        // meant "already seen"; both trigger sites actually treat any non-false
+        // value as "show it", which is why the tour appeared on every load. This
+        // isn't a CSS hide — {condition && <Tour .../>} means the component never
+        // mounts at all when this is false.
+        productTour: { dashboard: false, payroll: false } satisfies ProductTour,
         gstVerified: true,
         panVerified: true,
         contactPersonName: MOCK_AUTHENTICATED_USER.contactPersonName!,

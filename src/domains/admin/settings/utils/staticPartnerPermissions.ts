@@ -22,6 +22,13 @@ export const staticPartnerPermissions: Permission[] = [
         icon: `${ICON_CDN}/dashboard.svg`,
     },
     {
+        label: 'Accounting',
+        hasAccess: false,
+        subServices: [],
+        enableMoreService: false,
+        icon: `${ICON_CDN}/accounting.svg`,
+    },
+    {
         label: 'Mobile Recharge & Bills',
         hasAccess: false,
         enableMoreService: false,
@@ -369,13 +376,6 @@ export const staticPartnerPermissions: Permission[] = [
         subServices: [],
         enableMoreService: false,
         icon: `${ICON_CDN}/corporate-cards.svg`,
-    },
-    {
-        label: 'Accounting',
-        hasAccess: false,
-        subServices: [],
-        enableMoreService: false,
-        icon: `${ICON_CDN}/accounting.svg`,
     },
     {
         label: 'Hub',
