@@ -21,7 +21,8 @@ export type AccountingSectionTabKey =
     | 'books-of-accounts'
     | 'trial-balance'
     | 'pnl'
-    | 'balance-sheet';
+    | 'balance-sheet'
+    | 'chart-of-accounts';
 
 interface AccountingSectionTabsProps {
     activeKey: AccountingSectionTabKey;
@@ -79,7 +80,6 @@ const ACCOUNTING_TABS: TabsProps['items'] = [
         key: 'chart-of-accounts',
         label: 'Chart of Accounts',
         icon: <ApartmentOutlined />,
-        disabled: true,
     },
     {
         key: 'reports-analysis',
@@ -100,6 +100,7 @@ const TAB_ROUTES: Record<AccountingSectionTabKey, string> = {
     'trial-balance': `${paths.dashboard.accounting}/${paths.accounting.trialBalance}`,
     pnl: `${paths.dashboard.accounting}/${paths.accounting.pnl}`,
     'balance-sheet': `${paths.dashboard.accounting}/${paths.accounting.balanceSheetReport}`,
+    'chart-of-accounts': `${paths.dashboard.accounting}/${paths.accounting.chartOfAccounts}`,
 };
 
 const AccountingSectionTabs = ({ activeKey }: AccountingSectionTabsProps) => {

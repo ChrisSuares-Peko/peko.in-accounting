@@ -54,6 +54,9 @@ const PnlLanding = lazy(() => import('@domains/dashboard/accounting/pages/PnlLan
 const BalanceSheetReportLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/BalanceSheetReportLanding')
 );
+const ChartOfAccountsLanding = lazy(
+    () => import('@domains/dashboard/accounting/pages/ChartOfAccountsLanding')
+);
 const DayBookLanding = lazy(() => import('@domains/dashboard/accounting/pages/DayBookLanding'));
 const TransactionsLanding = lazy(
     () => import('@domains/dashboard/accounting/pages/TransactionsLanding')
@@ -106,6 +109,7 @@ export const accountingRoutes = [
     { element: <TrialBalanceLanding />, path: paths.accounting.trialBalance },
     { element: <PnlLanding />, path: paths.accounting.pnl },
     { element: <BalanceSheetReportLanding />, path: paths.accounting.balanceSheetReport },
+    { element: <ChartOfAccountsLanding />, path: paths.accounting.chartOfAccounts },
     { element: <DayBookLanding />, path: paths.accounting.dayBook },
     { element: <TransactionsLanding />, path: paths.accounting.transactions },
     { element: <FinancialStatementsLanding />, path: paths.accounting.financialStatements },

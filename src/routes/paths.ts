@@ -318,6 +318,7 @@ export const paths = {
         // financial-statements/balance-sheet page) — this is the new
         // Books-of-Accounts-derived Balance Sheet report.
         balanceSheetReport: 'balance-sheet',
+        chartOfAccounts: 'chart-of-accounts',
         transactions: 'transactions',
         financialStatements: 'financial-statements',
         profitLoss: 'financial-statements/profit-loss',
