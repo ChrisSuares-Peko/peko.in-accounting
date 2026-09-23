@@ -32,7 +32,14 @@ const NavIconGlyph = ({ icon }: { icon: any }) => {
             />
         );
     }
-    return <ReactSVG data-testid="nav-icon-svg" src={icon} key={icon} />;
+    return (
+        <ReactSVG
+            data-testid="nav-icon-svg"
+            src={icon}
+            key={icon}
+            className="flex h-4 w-4 [&_svg]:h-full [&_svg]:w-full"
+        />
+    );
 };
 
 export const NavIcon = (
