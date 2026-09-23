@@ -11,19 +11,18 @@ import {
     RiseOutlined,
     ShoppingOutlined,
 } from '@ant-design/icons';
-import { Avatar, Card, Col, Flex, Row, Statistic, Typography, theme } from 'antd';
+import { Avatar, Col, Flex, Row, Statistic, Typography, theme } from 'antd';
 import { Link } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
-import { formatNumberWithLocalString } from '@utils/priceFormat';
 
 import { useLedgerData } from '../hooks/useLedgerData';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
+import SectionCard from '../sections/profitLoss/SectionCard';
 import { LedgerHead } from '../types/ledger';
+import { formatCompact } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
-
-const formatRupees = (value: number) => `₹${formatNumberWithLocalString(value, 0, 0)}`;
 
 // One card per chart-of-accounts head — closing balances are read live from
 // useLedgerData() below, never hardcoded here. `path` is the relative segment
@@ -82,17 +81,25 @@ const LedgersLanding = () => {
                 <AccountingSectionTabs activeKey="ledgers" />
             </Col>
             <Col span={24}>
-                <Title level={4} className="!mb-0">
+                <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
                     Ledgers
                 </Title>
-                <Text type="secondary">Every account in your chart of accounts, grouped by head.</Text>
+                <Text className="text-sm text-bodyText">
+                    Every account in your chart of accounts, grouped by head.
+                </Text>
             </Col>
             <Col span={24}>
                 <Row gutter={[16, 16]}>
                     {HEAD_CARDS.map(card => (
-                        <Col xs={24} sm={12} lg={8} key={card.head}>
-                            <Link to={`${paths.dashboard.accounting}/${card.path}`} className="block">
-                                <Card hoverable>
+                        <Col xs={24} sm={12} md={8} xl={6} key={card.head} className="flex">
+                            <Link
+                                to={`${paths.dashboard.accounting}/${card.path}`}
+                                className="block w-full"
+                            >
+                                <SectionCard
+                                    title={card.label}
+                                    className="cursor-pointer transition-colors hover:border-danger"
+                                >
                                     <Flex align="center" gap={12}>
                                         <Avatar
                                             size={40}
@@ -103,12 +110,11 @@ const LedgersLanding = () => {
                                             }}
                                         />
                                         <Statistic
-                                            title={card.label}
                                             value={closingByHead[card.head] ?? 0}
-                                            formatter={value => formatRupees(Number(value))}
+                                            formatter={value => formatCompact(Number(value))}
                                         />
                                     </Flex>
-                                </Card>
+                                </SectionCard>
                             </Link>
                         </Col>
                     ))}

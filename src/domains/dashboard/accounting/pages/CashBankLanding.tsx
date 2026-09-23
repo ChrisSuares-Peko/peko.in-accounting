@@ -1,13 +1,12 @@
 import { useMemo, useState } from 'react';
 
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Flex, Row, Statistic, Table, Typography } from 'antd';
+import { Button, Col, Flex, Row, Statistic, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 import { Link } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
-import { formatNumberWithLocalString } from '@utils/priceFormat';
 
 import { useCashBookEntries } from '../hooks/useCashBookEntries';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
@@ -16,12 +15,11 @@ import LedgerDateRangeFilter, {
     MOCK_TODAY,
     getPresetRange,
 } from '../sections/LedgerDateRangeFilter';
+import SectionCard from '../sections/profitLoss/SectionCard';
 import { CashBookEntry } from '../types/cashBook';
+import { formatCompact, formatRupee } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
-
-const formatRupees = (value: number) => `₹${formatNumberWithLocalString(value, 0, 0)}`;
-const formatAmount = (value: number) => formatNumberWithLocalString(value, 2, 2);
 
 interface CashBookTableRow {
     key: string;
@@ -48,7 +46,7 @@ const columns: ColumnsType<CashBookTableRow> = [
         dataIndex: 'label',
         key: 'label',
         render: (label: string, row) => (
-            <span className={row.muted ? 'italic text-gray-400' : undefined}>{label}</span>
+            <span className={row.muted ? 'italic text-muted' : undefined}>{label}</span>
         ),
     },
     {
@@ -57,7 +55,7 @@ const columns: ColumnsType<CashBookTableRow> = [
         key: 'cashAmount',
         align: 'right',
         render: (value: number | null) => (
-            <span className="tabular-nums">{value === null ? '—' : formatAmount(value)}</span>
+            <span className="tabular-nums">{value === null ? '—' : formatRupee(value)}</span>
         ),
     },
     {
@@ -66,7 +64,7 @@ const columns: ColumnsType<CashBookTableRow> = [
         key: 'bankAmount',
         align: 'right',
         render: (value: number | null) => (
-            <span className="tabular-nums">{value === null ? '—' : formatAmount(value)}</span>
+            <span className="tabular-nums">{value === null ? '—' : formatRupee(value)}</span>
         ),
     },
 ];
@@ -138,71 +136,73 @@ const CashBankLanding = () => {
                 <Link to={`${paths.dashboard.accounting}/${paths.accounting.ledgers}`}>
                     <Flex align="center" gap={4}>
                         <ArrowLeftOutlined style={{ fontSize: 12 }} />
-                        <Text type="secondary">Ledgers</Text>
+                        <Text className="text-bodyText">Ledgers</Text>
                     </Flex>
                 </Link>
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <Title level={4} className="!mb-0">
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <Flex vertical gap={2}>
+                        <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
                             Cash & Bank
                         </Title>
-                        <Text type="secondary">
+                        <Text className="text-sm text-bodyText">
                             Double-column cash book — FY 2026-27, as of{' '}
                             {today.format('D MMMM YYYY')}
                         </Text>
-                    </Col>
-                    <Col>
-                        <Statistic
-                            title="Closing Balance"
-                            value={totals.closingTotal}
-                            formatter={value => formatRupees(Number(value))}
-                        />
-                    </Col>
-                </Row>
+                    </Flex>
+                    <Statistic
+                        title="Closing Balance"
+                        value={totals.closingTotal}
+                        formatter={value => formatCompact(Number(value))}
+                    />
+                </Flex>
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <LedgerDateRangeFilter
-                            preset={preset}
-                            onPresetChange={setPreset}
-                            customRange={customRange}
-                            onCustomRangeChange={setCustomRange}
-                        />
-                    </Col>
-                    <Col>
-                        <Flex gap={8} wrap="wrap">
-                            <Button>Reconcile Bank</Button>
-                            <Button>Physical Cash Count</Button>
-                            <Button>Upload Cheques</Button>
-                            <Button type="primary">Add Manual Transaction</Button>
-                        </Flex>
-                    </Col>
-                </Row>
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <LedgerDateRangeFilter
+                        preset={preset}
+                        onPresetChange={setPreset}
+                        customRange={customRange}
+                        onCustomRangeChange={setCustomRange}
+                    />
+                    <Flex gap={8} wrap="wrap" className="flex-col sm:flex-row">
+                        <Button className="w-full sm:w-auto">Reconcile Bank</Button>
+                        <Button className="w-full sm:w-auto">Physical Cash Count</Button>
+                        <Button className="w-full sm:w-auto">Upload Cheques</Button>
+                        <Button type="primary" className="w-full sm:w-auto">
+                            Add Manual Transaction
+                        </Button>
+                    </Flex>
+                </Flex>
             </Col>
             <Col span={24}>
                 <Row gutter={[16, 16]}>
                     <Col xs={24} md={12}>
-                        <Card title="Dr. (Receipts)">
-                            <Table
-                                columns={columns}
-                                dataSource={drTableRows}
-                                pagination={false}
-                                rowKey="key"
-                            />
-                        </Card>
+                        <SectionCard title="Dr. (Receipts)">
+                            <div className="overflow-x-auto">
+                                <Table
+                                    columns={columns}
+                                    dataSource={drTableRows}
+                                    pagination={false}
+                                    rowKey="key"
+                                    className="min-w-[480px]"
+                                />
+                            </div>
+                        </SectionCard>
                     </Col>
                     <Col xs={24} md={12}>
-                        <Card title="Cr. (Payments)">
-                            <Table
-                                columns={columns}
-                                dataSource={crTableRows}
-                                pagination={false}
-                                rowKey="key"
-                            />
-                        </Card>
+                        <SectionCard title="Cr. (Payments)">
+                            <div className="overflow-x-auto">
+                                <Table
+                                    columns={columns}
+                                    dataSource={crTableRows}
+                                    pagination={false}
+                                    rowKey="key"
+                                    className="min-w-[480px]"
+                                />
+                            </div>
+                        </SectionCard>
                     </Col>
                 </Row>
             </Col>

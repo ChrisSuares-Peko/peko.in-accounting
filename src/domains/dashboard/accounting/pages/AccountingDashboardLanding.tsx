@@ -7,38 +7,23 @@ import {
     PlusOutlined,
     TeamOutlined,
 } from '@ant-design/icons';
-import {
-    Avatar,
-    Button,
-    Card,
-    Col,
-    Empty,
-    List,
-    Row,
-    Statistic,
-    Table,
-    Tag,
-    Typography,
-    theme,
-} from 'antd';
+import { Avatar, Button, Col, Empty, Flex, List, Row, Statistic, Table, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-
-import { formatNumberWithLocalString } from '@utils/priceFormat';
 
 import { useLedgerData } from '../hooks/useLedgerData';
 import { useNotifications } from '../hooks/useNotifications';
 import { useRecentTransactions } from '../hooks/useRecentTransactions';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
+import SectionCard from '../sections/profitLoss/SectionCard';
 import { LedgerHead } from '../types/ledger';
 import { AccountingNotification, NotificationCategory } from '../types/notification';
 import { RecentTransaction } from '../types/transaction';
+import { formatCompact, formatRupee } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
 
 const ASSET_HEADS: LedgerHead[] = ['cashBank', 'stock', 'assets'];
-
-const formatRupees = (value: number) => `₹${formatNumberWithLocalString(value, 0, 0)}`;
 
 // <=2 days: error (red), 3-7 days: warning (amber), 8+ days: default (grey) — antd's
 // own preset Tag colors, not custom hex.
@@ -52,8 +37,17 @@ const getDueTag = (daysUntilDue: number): { color: 'error' | 'warning' | 'defaul
     return { color: 'default', label };
 };
 
+// Maps each notification category to the domain's semantic tokens — payroll
+// has no success/warning/danger equivalent, so it gets a neutral surface
+// instead of an invented color.
+const CATEGORY_META: Record<NotificationCategory, { icon: React.ReactNode; className: string }> = {
+    payable: { icon: <ArrowUpOutlined />, className: 'bg-danger-surface text-danger' },
+    receivable: { icon: <ArrowDownOutlined />, className: 'bg-success-surface text-success' },
+    tax: { icon: <FileTextOutlined />, className: 'bg-warning-surface text-warning' },
+    payroll: { icon: <TeamOutlined />, className: 'bg-surfaceGray text-bodyText' },
+};
+
 const AccountingDashboardLanding = () => {
-    const { token } = theme.useToken();
     const ledgerData = useLedgerData();
     const recentTransactions = useRecentTransactions();
     const notifications = useNotifications();
@@ -80,15 +74,7 @@ const AccountingDashboardLanding = () => {
         };
     }, [ledgerData]);
 
-    const categoryMeta: Record<NotificationCategory, { icon: React.ReactNode; bg: string; color: string }> = {
-        payable: { icon: <ArrowUpOutlined />, bg: token.colorErrorBg, color: token.colorError },
-        receivable: { icon: <ArrowDownOutlined />, bg: token.colorSuccessBg, color: token.colorSuccess },
-        tax: { icon: <FileTextOutlined />, bg: token.colorWarningBg, color: token.colorWarning },
-        payroll: { icon: <TeamOutlined />, bg: token.colorInfoBg, color: token.colorInfo },
-    };
-
-    const renderAmount = (value: number) =>
-        value === 0 ? '—' : formatNumberWithLocalString(value, 2, 2);
+    const renderAmount = (value: number) => (value === 0 ? '—' : formatRupee(value));
 
     const transactionColumns: ColumnsType<RecentTransaction> = [
         {
@@ -129,89 +115,79 @@ const AccountingDashboardLanding = () => {
                 <AccountingSectionTabs activeKey="dashboard" />
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <Title level={4} className="!mb-0">
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <Flex vertical gap={2}>
+                        <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
                             Dashboard
                         </Title>
-                        <Text type="secondary">
+                        <Text className="text-sm text-bodyText">
                             A snapshot of your books — balances, recent activity, and what needs
                             your attention.
                         </Text>
-                    </Col>
-                    <Col>
-                        <Button type="primary" icon={<PlusOutlined />}>
-                            Add New Entry
-                        </Button>
-                    </Col>
-                </Row>
+                    </Flex>
+                    <Button type="primary" icon={<PlusOutlined />} className="w-full sm:w-auto">
+                        Add New Entry
+                    </Button>
+                </Flex>
             </Col>
             <Col span={24}>
                 <Row gutter={16}>
                     <Col xs={24} lg={16}>
                         <Row gutter={[16, 16]}>
-                            <Col xs={24} sm={8}>
-                                <Card>
-                                    <Statistic
-                                        title="Assets"
-                                        value={totals.assets}
-                                        formatter={value => formatRupees(Number(value))}
-                                    />
-                                </Card>
+                            <Col xs={24} sm={12} xl={8}>
+                                <SectionCard title="Assets">
+                                    <Statistic value={totals.assets} formatter={value => formatCompact(Number(value))} />
+                                </SectionCard>
                             </Col>
-                            <Col xs={24} sm={8}>
-                                <Card>
+                            <Col xs={24} sm={12} xl={8}>
+                                <SectionCard title="Liabilities">
                                     <Statistic
-                                        title="Liabilities"
                                         value={totals.liabilities}
-                                        formatter={value => formatRupees(Number(value))}
+                                        formatter={value => formatCompact(Number(value))}
                                     />
-                                </Card>
+                                </SectionCard>
                             </Col>
-                            <Col xs={24} sm={8}>
-                                <Card>
+                            <Col xs={24} sm={12} xl={8}>
+                                <SectionCard title="Capital & Equity">
                                     <Statistic
-                                        title="Capital & Equity"
                                         value={totals.capitalEquity}
-                                        formatter={value => formatRupees(Number(value))}
+                                        formatter={value => formatCompact(Number(value))}
                                     />
-                                </Card>
+                                </SectionCard>
                             </Col>
                             <Col xs={24} sm={12}>
-                                <Card>
+                                <SectionCard title="Total Receivables">
                                     <Statistic
-                                        title="Total Receivables"
                                         value={totals.receivables}
-                                        formatter={value => formatRupees(Number(value))}
+                                        formatter={value => formatCompact(Number(value))}
                                     />
-                                </Card>
+                                </SectionCard>
                             </Col>
                             <Col xs={24} sm={12}>
-                                <Card>
+                                <SectionCard title="Total Payables">
                                     <Statistic
-                                        title="Total Payables"
                                         value={totals.payables}
-                                        formatter={value => formatRupees(Number(value))}
+                                        formatter={value => formatCompact(Number(value))}
                                     />
-                                </Card>
+                                </SectionCard>
                             </Col>
                             <Col span={24}>
-                                <Card title="Recent Transactions">
-                                    <Table
-                                        columns={transactionColumns}
-                                        dataSource={recentTransactions}
-                                        rowKey="id"
-                                        pagination={false}
-                                    />
-                                </Card>
+                                <SectionCard title="Recent Transactions">
+                                    <div className="overflow-x-auto">
+                                        <Table
+                                            columns={transactionColumns}
+                                            dataSource={recentTransactions}
+                                            rowKey="id"
+                                            pagination={false}
+                                            className="min-w-[640px]"
+                                        />
+                                    </div>
+                                </SectionCard>
                             </Col>
                         </Row>
                     </Col>
                     <Col xs={24} lg={8}>
-                        <Card
-                            title="Notifications & Reminders"
-                            style={{ position: 'sticky', top: 16 }}
-                        >
+                        <SectionCard title="Notifications & Reminders" className="sticky top-4">
                             {notifications.length === 0 ? (
                                 <Empty description="Nothing due right now" />
                             ) : (
@@ -219,22 +195,14 @@ const AccountingDashboardLanding = () => {
                                     itemLayout="horizontal"
                                     dataSource={notifications}
                                     renderItem={(item: AccountingNotification) => {
-                                        const meta = categoryMeta[item.category];
+                                        const meta = CATEGORY_META[item.category];
                                         const dueTag = getDueTag(item.daysUntilDue);
                                         return (
                                             <List.Item
                                                 extra={<Tag color={dueTag.color}>{dueTag.label}</Tag>}
                                             >
                                                 <List.Item.Meta
-                                                    avatar={
-                                                        <Avatar
-                                                            icon={meta.icon}
-                                                            style={{
-                                                                backgroundColor: meta.bg,
-                                                                color: meta.color,
-                                                            }}
-                                                        />
-                                                    }
+                                                    avatar={<Avatar icon={meta.icon} className={meta.className} />}
                                                     title={item.title}
                                                     description={item.subtitle}
                                                 />
@@ -243,7 +211,7 @@ const AccountingDashboardLanding = () => {
                                     }}
                                 />
                             )}
-                        </Card>
+                        </SectionCard>
                     </Col>
                 </Row>
             </Col>

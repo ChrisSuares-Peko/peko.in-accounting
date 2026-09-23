@@ -1,22 +1,20 @@
 import { ReactNode, useMemo, useState } from 'react';
 
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Avatar, Button, Card, Col, Flex, Row, Statistic, Table, Typography, theme } from 'antd';
+import { Avatar, Button, Col, Flex, Row, Statistic, Table, Typography, theme } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 import { Link } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
-import { formatNumberWithLocalString } from '@utils/priceFormat';
 
 import AccountingSectionTabs from './AccountingSectionTabs';
 import LedgerDateRangeFilter, { DateRangePreset, MOCK_TODAY, getPresetRange } from './LedgerDateRangeFilter';
+import SectionCard from './profitLoss/SectionCard';
 import { GeneralLedgerEntry } from '../types/generalLedger';
+import { formatCompact, formatRupee } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
-
-const formatRupees = (value: number) => `₹${formatNumberWithLocalString(value, 0, 0)}`;
-const formatAmount = (value: number) => formatNumberWithLocalString(value, 2, 2);
 
 export interface LedgerDetailPageProps {
     headName: string;
@@ -61,7 +59,7 @@ const columns: ColumnsType<LedgerTableRow> = [
         dataIndex: 'label',
         key: 'label',
         render: (label: string, row) => (
-            <span className={row.muted ? 'italic text-gray-400' : undefined}>{label}</span>
+            <span className={row.muted ? 'italic text-muted' : undefined}>{label}</span>
         ),
     },
     {
@@ -69,7 +67,7 @@ const columns: ColumnsType<LedgerTableRow> = [
         dataIndex: 'amount',
         key: 'amount',
         align: 'right',
-        render: (value: number) => <span className="tabular-nums">{formatAmount(value)}</span>,
+        render: (value: number) => <span className="tabular-nums">{formatRupee(value)}</span>,
     },
 ];
 
@@ -158,87 +156,87 @@ const LedgerDetailPage = ({
                 <Link to={`${paths.dashboard.accounting}/${paths.accounting.ledgers}`}>
                     <Flex align="center" gap={4}>
                         <ArrowLeftOutlined style={{ fontSize: 12 }} />
-                        <Text type="secondary">Ledgers</Text>
+                        <Text className="text-bodyText">Ledgers</Text>
                     </Flex>
                 </Link>
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <Flex align="center" gap={12}>
-                            <Avatar
-                                size={40}
-                                icon={headIcon}
-                                style={{
-                                    backgroundColor: token.colorPrimaryBg,
-                                    color: token.colorPrimary,
-                                }}
-                            />
-                            <Flex vertical>
-                                <Title level={4} className="!mb-0">
-                                    {headName}
-                                </Title>
-                                <Text type="secondary">{subtitle}</Text>
-                            </Flex>
-                        </Flex>
-                    </Col>
-                    <Col>
-                        <Statistic
-                            title="Closing Balance"
-                            value={closingBalance}
-                            formatter={value => formatRupees(Number(value))}
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <Flex align="center" gap={12}>
+                        <Avatar
+                            size={40}
+                            icon={headIcon}
+                            style={{
+                                backgroundColor: token.colorPrimaryBg,
+                                color: token.colorPrimary,
+                            }}
                         />
-                    </Col>
-                </Row>
+                        <Flex vertical>
+                            <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
+                                {headName}
+                            </Title>
+                            <Text className="text-sm text-bodyText">{subtitle}</Text>
+                        </Flex>
+                    </Flex>
+                    <Statistic
+                        title="Closing Balance"
+                        value={closingBalance}
+                        formatter={value => formatCompact(Number(value))}
+                    />
+                </Flex>
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <LedgerDateRangeFilter
-                            preset={preset}
-                            onPresetChange={setPreset}
-                            customRange={customRange}
-                            onCustomRangeChange={setCustomRange}
-                        />
-                    </Col>
-                    <Col>
-                        <Flex gap={8} wrap="wrap">
-                            {extraActions?.map(action => (
-                                <Button key={action.label} icon={action.icon}>
-                                    {action.label}
-                                </Button>
-                            ))}
-                            <Button type="primary">Add Manual Transaction</Button>
-                        </Flex>
-                    </Col>
-                </Row>
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <LedgerDateRangeFilter
+                        preset={preset}
+                        onPresetChange={setPreset}
+                        customRange={customRange}
+                        onCustomRangeChange={setCustomRange}
+                    />
+                    <Flex gap={8} wrap="wrap" className="flex-col sm:flex-row">
+                        {extraActions?.map(action => (
+                            <Button key={action.label} icon={action.icon} className="w-full sm:w-auto">
+                                {action.label}
+                            </Button>
+                        ))}
+                        <Button type="primary" className="w-full sm:w-auto">
+                            Add Manual Transaction
+                        </Button>
+                    </Flex>
+                </Flex>
             </Col>
             <Col span={24}>
                 <Row gutter={[16, 16]}>
                     <Col xs={24} md={12}>
-                        <Card title="Dr.">
-                            <Table
-                                columns={columns}
-                                dataSource={drTableRows}
-                                pagination={false}
-                                rowKey="key"
-                            />
-                        </Card>
+                        <SectionCard title="Dr.">
+                            <div className="overflow-x-auto">
+                                <Table
+                                    columns={columns}
+                                    dataSource={drTableRows}
+                                    pagination={false}
+                                    rowKey="key"
+                                    className="min-w-[420px]"
+                                />
+                            </div>
+                        </SectionCard>
                     </Col>
                     <Col xs={24} md={12}>
-                        <Card title="Cr.">
-                            <Table
-                                columns={columns}
-                                dataSource={crTableRows}
-                                pagination={false}
-                                rowKey="key"
-                            />
-                        </Card>
+                        <SectionCard title="Cr.">
+                            <div className="overflow-x-auto">
+                                <Table
+                                    columns={columns}
+                                    dataSource={crTableRows}
+                                    pagination={false}
+                                    rowKey="key"
+                                    className="min-w-[420px]"
+                                />
+                            </div>
+                        </SectionCard>
                     </Col>
                 </Row>
             </Col>
             <Col span={24}>
-                <Text type="secondary" className="text-xs">
+                <Text className="text-xs text-muted">
                     Showing posted transactions only.
                     {footnoteExtra ? ` ${footnoteExtra}` : ''}
                 </Text>

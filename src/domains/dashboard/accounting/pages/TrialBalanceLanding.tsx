@@ -6,19 +6,18 @@ import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
-import { formatNumberWithLocalString } from '@utils/priceFormat';
 
 import { useTrialBalanceRows } from '../hooks/useTrialBalanceRows';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
+import SectionCard from '../sections/profitLoss/SectionCard';
 import { TrialBalanceRow } from '../types/trialBalance';
+import { formatRupee } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
 
 // Same static "today" the rest of the accounting section's dummy data is
 // anchored to (see LedgerDateRangeFilter's MOCK_TODAY).
 const MOCK_TODAY = '2026-09-19';
-
-const formatAmount = (value: number) => formatNumberWithLocalString(value, 2, 2);
 
 const TrialBalanceLanding = () => {
     const rows = useTrialBalanceRows();
@@ -40,7 +39,7 @@ const TrialBalanceLanding = () => {
                 row.hasDetail && row.detailRoute ? (
                     <Link to={`${paths.dashboard.accounting}/${row.detailRoute}`}>{name}</Link>
                 ) : (
-                    <Text className="text-gray-400">{name}</Text>
+                    <Text className="text-muted">{name}</Text>
                 ),
         },
         {
@@ -49,7 +48,7 @@ const TrialBalanceLanding = () => {
             key: 'debit',
             align: 'right',
             render: (value: number | null) => (
-                <span className="tabular-nums">{value === null ? '—' : formatAmount(value)}</span>
+                <span className="tabular-nums">{value === null ? '—' : formatRupee(value)}</span>
             ),
         },
         {
@@ -58,7 +57,7 @@ const TrialBalanceLanding = () => {
             key: 'credit',
             align: 'right',
             render: (value: number | null) => (
-                <span className="tabular-nums">{value === null ? '—' : formatAmount(value)}</span>
+                <span className="tabular-nums">{value === null ? '—' : formatRupee(value)}</span>
             ),
         },
     ];
@@ -69,31 +68,38 @@ const TrialBalanceLanding = () => {
                 <AccountingSectionTabs activeKey="trial-balance" />
             </Col>
             <Col span={24}>
-                <Title level={4} className="!mb-0">
+                <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
                     Trial Balance
                 </Title>
-                <Text type="secondary">as of {dayjs(MOCK_TODAY).format('D MMMM YYYY')}</Text>
+                <Text className="text-sm text-bodyText">
+                    as of {dayjs(MOCK_TODAY).format('D MMMM YYYY')}
+                </Text>
             </Col>
             <Col span={24}>
-                <Table
-                    columns={columns}
-                    dataSource={rows}
-                    rowKey="id"
-                    pagination={false}
-                    summary={() => (
-                        <Table.Summary.Row>
-                            <Table.Summary.Cell index={0}>
-                                <strong>Total</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={1} align="right">
-                                <strong className="tabular-nums">{formatAmount(debitTotal)}</strong>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell index={2} align="right">
-                                <strong className="tabular-nums">{formatAmount(creditTotal)}</strong>
-                            </Table.Summary.Cell>
-                        </Table.Summary.Row>
-                    )}
-                />
+                <SectionCard title="Trial Balance">
+                    <div className="overflow-x-auto">
+                        <Table
+                            columns={columns}
+                            dataSource={rows}
+                            rowKey="id"
+                            pagination={false}
+                            className="min-w-[480px]"
+                            summary={() => (
+                                <Table.Summary.Row>
+                                    <Table.Summary.Cell index={0}>
+                                        <strong>Total</strong>
+                                    </Table.Summary.Cell>
+                                    <Table.Summary.Cell index={1} align="right">
+                                        <strong className="tabular-nums">{formatRupee(debitTotal)}</strong>
+                                    </Table.Summary.Cell>
+                                    <Table.Summary.Cell index={2} align="right">
+                                        <strong className="tabular-nums">{formatRupee(creditTotal)}</strong>
+                                    </Table.Summary.Cell>
+                                </Table.Summary.Row>
+                            )}
+                        />
+                    </div>
+                </SectionCard>
             </Col>
         </Row>
     );

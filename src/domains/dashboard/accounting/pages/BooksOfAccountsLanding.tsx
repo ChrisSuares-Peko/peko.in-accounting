@@ -6,20 +6,18 @@ import type { CollapseProps } from 'antd';
 import { Link } from 'react-router-dom';
 
 import { paths } from '@src/routes/paths';
-import { formatNumberWithLocalString } from '@utils/priceFormat';
 
 import { useBooksAccounts } from '../hooks/useBooksAccounts';
 import { useLedgerData } from '../hooks/useLedgerData';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
 import { BooksAccount, BooksCategory, categoryFor } from '../types/booksAccount';
+import { formatRupee } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
 
-const formatAmount = (value: number) => formatNumberWithLocalString(value, 0, 0);
-
 // Absolute amount + the side it actually sits on, e.g. "₹52,500 Dr" — used for
 // individual account rows, where `side` is already known directly.
-const formatSide = (balance: number, side: 'Dr' | 'Cr') => `₹${formatAmount(balance)} ${side}`;
+const formatSide = (balance: number, side: 'Dr' | 'Cr') => `${formatRupee(balance)} ${side}`;
 
 // Same "amount + side" formatting, but for a SIGNED total (positive = normal
 // side, negative = net balance has flipped to the other side) — used for the
@@ -117,7 +115,7 @@ const BooksOfAccountsLanding = () => {
                                     {account.name}
                                 </Link>
                             ) : (
-                                <Text className="text-gray-400">{account.name}</Text>
+                                <Text className="text-muted">{account.name}</Text>
                             )}
                             <span className="tabular-nums">
                                 {formatSide(account.balance, account.side)}
@@ -135,24 +133,24 @@ const BooksOfAccountsLanding = () => {
                 <AccountingSectionTabs activeKey="books-of-accounts" />
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <Title level={4} className="!mb-0">
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <Flex vertical gap={2}>
+                        <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
                             Books of Accounts
                         </Title>
-                        <Text type="secondary">
+                        <Text className="text-sm text-bodyText">
                             Every account, grouped by where its balance currently sits — a
                             party&apos;s own category follows its balance, not what kind of party
                             it is.
                         </Text>
-                    </Col>
-                    <Col>
-                        <Flex gap={8} wrap="wrap">
-                            <Button>Create Account Manually</Button>
-                            <Button type="primary">Add Manual Transaction</Button>
-                        </Flex>
-                    </Col>
-                </Row>
+                    </Flex>
+                    <Flex gap={8} wrap="wrap" className="flex-col sm:flex-row">
+                        <Button className="w-full sm:w-auto">Create Account Manually</Button>
+                        <Button type="primary" className="w-full sm:w-auto">
+                            Add Manual Transaction
+                        </Button>
+                    </Flex>
+                </Flex>
             </Col>
             <Col span={24}>
                 <Input
@@ -168,7 +166,7 @@ const BooksOfAccountsLanding = () => {
                 <Collapse items={collapseItems} defaultActiveKey={CATEGORY_CONFIG.map(c => c.key)} />
             </Col>
             <Col span={24}>
-                <Text type="secondary" className="text-xs">
+                <Text className="text-xs text-muted">
                     Head totals for Assets and Liabilities are the true balance-sheet figures; the
                     accounts listed are a representative sample, not an exhaustive query.
                     Capital/Equity, Other Income, and Other Expense are shown in full for this

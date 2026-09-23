@@ -6,27 +6,13 @@ import {
     ExclamationCircleOutlined,
     PlusOutlined,
 } from '@ant-design/icons';
-import {
-    Button,
-    Card,
-    Col,
-    DatePicker,
-    Flex,
-    Row,
-    Select,
-    Statistic,
-    Table,
-    Tag,
-    Typography,
-    theme,
-} from 'antd';
+import { Button, Col, DatePicker, Flex, Row, Select, Statistic, Table, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 
-import { formatNumberWithLocalString } from '@utils/priceFormat';
-
 import { useDayBookEntries } from '../hooks/useDayBookEntries';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
+import SectionCard from '../sections/profitLoss/SectionCard';
 import {
     DAY_BOOK_ENTRY_SOURCES,
     DAY_BOOK_ENTRY_STATUSES,
@@ -34,6 +20,7 @@ import {
     DayBookEntry,
     DayBookEntryStatus,
 } from '../types/dayBook';
+import { formatRupee } from '../utils/reportFormat';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -57,7 +44,6 @@ const toFilterOptions = (values: readonly string[]) => [
 ];
 
 const DayBookLanding = () => {
-    const { token } = theme.useToken();
     const entries = useDayBookEntries();
 
     // Real, controlled filter state — not wired up to actually filter the table yet.
@@ -89,7 +75,7 @@ const DayBookLanding = () => {
             dataIndex: 'amount',
             key: 'amount',
             align: 'right',
-            render: (value: number) => `₹${formatNumberWithLocalString(value, 2, 2)}`,
+            render: (value: number) => formatRupee(value),
         },
         {
             title: 'Status',
@@ -107,67 +93,58 @@ const DayBookLanding = () => {
                 <AccountingSectionTabs activeKey="day-book" />
             </Col>
             <Col span={24}>
-                <Row justify="space-between" align="middle" gutter={[16, 16]}>
-                    <Col>
-                        <Title level={4} className="!mb-0">
+                <Flex gap={16} className="w-full flex-col md:flex-row md:items-center md:justify-between">
+                    <Flex vertical gap={2}>
+                        <Title level={4} className="!mb-0 !text-lg !font-semibold !text-ink md:!text-xl">
                             Day Book
                         </Title>
-                        <Text type="secondary">
+                        <Text className="text-sm text-bodyText">
                             Every transaction on Peko, in one place — automated postings and
                             manual entries alike.
                         </Text>
-                    </Col>
-                    <Col>
-                        <Button type="primary" icon={<PlusOutlined />}>
-                            Add New Entry
-                        </Button>
-                    </Col>
-                </Row>
+                    </Flex>
+                    <Button type="primary" icon={<PlusOutlined />} className="w-full sm:w-auto">
+                        Add New Entry
+                    </Button>
+                </Flex>
             </Col>
             <Col span={24}>
                 <Row gutter={[16, 16]}>
-                    <Col xs={24} sm={8}>
-                        <Card>
+                    <Col xs={24} sm={12} xl={8}>
+                        <SectionCard title="Pending Review">
                             <Statistic
-                                title="Pending Review"
                                 value={stats.pendingReview}
-                                prefix={<ClockCircleOutlined style={{ color: token.colorInfo }} />}
-                                valueStyle={{ color: token.colorInfo }}
+                                prefix={<ClockCircleOutlined className="text-bodyText" />}
+                                formatter={value => <span className="text-bodyText">{value}</span>}
                             />
-                        </Card>
+                        </SectionCard>
                     </Col>
-                    <Col xs={24} sm={8}>
-                        <Card>
+                    <Col xs={24} sm={12} xl={8}>
+                        <SectionCard title="Pending Approval">
                             <Statistic
-                                title="Pending Approval"
                                 value={stats.pendingApproval}
-                                prefix={
-                                    <ExclamationCircleOutlined style={{ color: token.colorWarning }} />
-                                }
-                                valueStyle={{ color: token.colorWarning }}
+                                prefix={<ExclamationCircleOutlined className="text-warning" />}
+                                formatter={value => <span className="text-warning">{value}</span>}
                             />
-                        </Card>
+                        </SectionCard>
                     </Col>
-                    <Col xs={24} sm={8}>
-                        <Card>
+                    <Col xs={24} sm={12} xl={8}>
+                        <SectionCard title="Posted Today">
                             <Statistic
-                                title="Posted Today"
                                 value={stats.postedToday}
-                                prefix={<CheckCircleOutlined style={{ color: token.colorSuccess }} />}
-                                valueStyle={{ color: token.colorSuccess }}
+                                prefix={<CheckCircleOutlined className="text-success" />}
+                                formatter={value => <span className="text-success">{value}</span>}
                             />
-                        </Card>
+                        </SectionCard>
                     </Col>
                 </Row>
             </Col>
             <Col span={24}>
-                <Card>
+                <SectionCard title="Filter">
                     <Row gutter={[16, 16]}>
                         <Col xs={24} md={8}>
                             <Flex vertical gap={4}>
-                                <Text type="secondary" className="text-xs">
-                                    Date Range
-                                </Text>
+                                <Text className="text-xs text-muted">Date Range</Text>
                                 <RangePicker
                                     className="w-full"
                                     value={dateRange}
@@ -177,9 +154,7 @@ const DayBookLanding = () => {
                         </Col>
                         <Col xs={24} sm={8} md={5}>
                             <Flex vertical gap={4}>
-                                <Text type="secondary" className="text-xs">
-                                    Voucher Type
-                                </Text>
+                                <Text className="text-xs text-muted">Voucher Type</Text>
                                 <Select
                                     className="w-full"
                                     value={typeFilter}
@@ -190,9 +165,7 @@ const DayBookLanding = () => {
                         </Col>
                         <Col xs={24} sm={8} md={5}>
                             <Flex vertical gap={4}>
-                                <Text type="secondary" className="text-xs">
-                                    Status
-                                </Text>
+                                <Text className="text-xs text-muted">Status</Text>
                                 <Select
                                     className="w-full"
                                     value={statusFilter}
@@ -203,9 +176,7 @@ const DayBookLanding = () => {
                         </Col>
                         <Col xs={24} sm={8} md={5}>
                             <Flex vertical gap={4}>
-                                <Text type="secondary" className="text-xs">
-                                    Source
-                                </Text>
+                                <Text className="text-xs text-muted">Source</Text>
                                 <Select
                                     className="w-full"
                                     value={sourceFilter}
@@ -215,12 +186,20 @@ const DayBookLanding = () => {
                             </Flex>
                         </Col>
                     </Row>
-                </Card>
+                </SectionCard>
             </Col>
             <Col span={24}>
-                <Card>
-                    <Table columns={columns} dataSource={entries} rowKey="id" pagination={false} />
-                </Card>
+                <SectionCard title="Transactions">
+                    <div className="overflow-x-auto">
+                        <Table
+                            columns={columns}
+                            dataSource={entries}
+                            rowKey="id"
+                            pagination={false}
+                            className="min-w-[900px]"
+                        />
+                    </div>
+                </SectionCard>
             </Col>
         </Row>
     );
