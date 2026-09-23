@@ -1,3 +1,55 @@
+import { ComponentType, createElement } from 'react';
+
+import {
+    ApartmentOutlined,
+    AppstoreOutlined,
+    AuditOutlined,
+    BankOutlined,
+    CreditCardOutlined,
+    FileProtectOutlined,
+    FileSyncOutlined,
+    FileTextOutlined,
+    GlobalOutlined,
+    LineChartOutlined,
+    MailOutlined,
+    MessageOutlined,
+    SafetyCertificateOutlined,
+    ShopOutlined,
+    SoundOutlined,
+    WalletOutlined,
+} from '@ant-design/icons';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+
+import AccountsIcon from '@assets/icons/Accounts.svg';
+import BuildingIcon from '@assets/icons/building.svg';
+import ConnectIcon from '@assets/icons/Connect.svg';
+import CorporateCardIcon from '@assets/icons/CorporateCard.svg';
+import DashboardIcon from '@assets/icons/Dashboard.svg';
+import ESignIcon from '@assets/icons/ESign.svg';
+import GiftCardsIcon from '@assets/icons/GiftCards.svg';
+import HelpIcon from '@assets/icons/Help.svg';
+import InsuranceIcon from '@assets/icons/Insurance.svg';
+import InvoicingIcon from '@assets/icons/Invoicing.svg';
+import LogisticsIcon from '@assets/icons/Logistics.svg';
+import MobileRechargeIcon from '@assets/icons/MobileRecharge.svg';
+import PaymentLinkIcon from '@assets/icons/PaymentLink.svg';
+import PayrollIcon from '@assets/icons/Payroll.svg';
+import PekoCloudIcon from '@assets/icons/pekocloud.svg';
+import ProcureIcon from '@assets/icons/ProcureIcon.svg';
+import ReportsIcon from '@assets/icons/Reports.svg';
+import SettingsIcon from '@assets/icons/Settings.svg';
+import SuppliesIcon from '@assets/icons/Supplies.svg';
+import TaxIcon from '@assets/icons/Tax.svg';
+import TravelIcon from '@assets/icons/Travel.svg';
+import TurboIcon from '@assets/icons/Turbo.svg';
+import UtilityIcon from '@assets/icons/Utility.svg';
+import VendorPayoutsIcon from '@assets/icons/VendorPayouts.svg';
+import VerificationSuiteIcon from '@assets/icons/VerificationSuite.svg';
+import WhatsAppForBusinessIcon from '@assets/icons/WhatsAppForBusiness.svg';
+import WorksIcon from '@assets/icons/Works.svg';
+import ZeroCarbonIcon from '@assets/icons/ZeroCarbon.svg';
+
 import { Permission } from '../types/partnerPermission';
 
 /**
@@ -6,12 +58,31 @@ import { Permission } from '../types/partnerPermission';
  *
  * Difference from the current API shape: the `"More Services"` wrapper node is
  * removed and its sub-services are promoted to **top-level** entries (each marked
- * `enableMoreService: true`). Every service also carries an `icon` (served from a
- * static CDN) and an explicit `enableMoreService` flag (defaults to `false`).
+ * `enableMoreService: true`). Every service also carries an `icon` and an explicit
+ * `enableMoreService` flag (defaults to `false`).
  * Remove this file and switch back to `useUpdateRoles().permissionData` once the
  * backend returns the flattened shape.
+ *
+ * Icons: `icon` used to be a `${ICON_CDN}/name.svg` URL pointing at an internal CDN
+ * (cdn.peko.one) that's unreachable from this standalone deployment, so every
+ * sidebar icon failed to load. Every service below now resolves to either a
+ * bundled local asset (imported above, from src/assets/icons/ — the same
+ * convention SidebarData.tsx already uses for its own static nav items) or, where
+ * no local asset is a clear match, an @ant-design/icons icon rendered to inline
+ * SVG markup via iconMarkup() below. NavIconGlyph (nav-section/vertical/NavIcon.tsx)
+ * is deliberately left untouched — it already knows how to render pasted SVG
+ * markup inline via isSvgMarkup()/InlineSvg, so a real antd icon rendered to a
+ * markup string flows through that exact same path rather than needing a new
+ * "React component" branch there.
  */
-const ICON_CDN = 'https://cdn.peko.one/service-icons';
+
+// Renders an antd icon component to a standalone <svg>...</svg> markup string at
+// module load, so it can sit in the same `icon: string` slot as a bundled asset
+// path or pasted markup — see the file-level comment above for why.
+const iconMarkup = (Icon: ComponentType): string => {
+    const rendered = renderToStaticMarkup(createElement(Icon));
+    return rendered.match(/<svg[\s\S]*<\/svg>/)?.[0] ?? rendered;
+};
 
 export const staticPartnerPermissions: Permission[] = [
     {
@@ -19,20 +90,20 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/dashboard.svg`,
+        icon: DashboardIcon,
     },
     {
         label: 'Accounting',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/accounting.svg`,
+        icon: AccountsIcon,
     },
     {
         label: 'Mobile Recharge & Bills',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/mobile-recharge-and-bills.svg`,
+        icon: MobileRechargeIcon,
         subServices: [
             { label: 'Prepaid', hasAccess: false },
             { label: 'Postpaid', hasAccess: false },
@@ -43,7 +114,7 @@ export const staticPartnerPermissions: Permission[] = [
         label: 'Utility Payments',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/utility-payments.svg`,
+        icon: UtilityIcon,
         subServices: [
             { label: 'Electricity Bill', hasAccess: false },
             { label: 'Broadband Bill', hasAccess: false },
@@ -81,7 +152,7 @@ export const staticPartnerPermissions: Permission[] = [
         label: 'Corporate Travel',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/corporate-travel.svg`,
+        icon: TravelIcon,
         subServices: [
             { label: 'airline', hasAccess: false },
             { label: 'hotels', hasAccess: false },
@@ -94,7 +165,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/payroll.svg`,
+        icon: PayrollIcon,
     },
     {
         label: 'Office Supplies',
@@ -102,7 +173,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/office-supplies.svg`,
+        icon: SuppliesIcon,
     },
     {
         label: 'Domain & Hosting',
@@ -110,7 +181,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/domain-and-hosting.svg`,
+        icon: iconMarkup(GlobalOutlined),
     },
     {
         label: 'Turbo',
@@ -118,7 +189,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/turbo.svg`,
+        icon: TurboIcon,
     },
     {
         label: 'eSign',
@@ -126,14 +197,14 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/esign.svg`,
+        icon: ESignIcon,
     },
     {
         label: 'Verification Suite',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/verification-suite.svg`,
+        icon: VerificationSuiteIcon,
     },
     {
         label: 'Peko Wallet',
@@ -141,7 +212,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/peko-wallet.svg`,
+        icon: iconMarkup(WalletOutlined),
     },
     {
         label: 'Company Incorporation',
@@ -149,7 +220,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/company-incorporation.svg`,
+        icon: iconMarkup(ApartmentOutlined),
     },
     {
         label: 'Business Registration',
@@ -157,7 +228,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/business-registration.svg`,
+        icon: iconMarkup(FileProtectOutlined),
     },
     {
         label: 'Global Business Setup',
@@ -165,7 +236,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/global-business-setup.svg`,
+        icon: iconMarkup(GlobalOutlined),
     },
     {
         label: 'Compliance',
@@ -173,7 +244,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/compliance.svg`,
+        icon: iconMarkup(SafetyCertificateOutlined),
     },
     {
         label: 'Procure',
@@ -181,7 +252,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/procure.svg`,
+        icon: ProcureIcon,
     },
     {
         label: 'Payouts',
@@ -189,7 +260,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/payouts.svg`,
+        icon: VendorPayoutsIcon,
     },
     {
         label: 'Payment Links',
@@ -197,7 +268,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/payment-links.svg`,
+        icon: PaymentLinkIcon,
     },
     {
         label: 'Document Attestation',
@@ -205,7 +276,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/document-attestation.svg`,
+        icon: iconMarkup(AuditOutlined),
     },
     {
         label: 'Business Docs',
@@ -213,7 +284,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/business-docs.svg`,
+        icon: iconMarkup(FileTextOutlined),
     },
     {
         label: 'Office Address',
@@ -221,28 +292,28 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/office-address.svg`,
+        icon: BuildingIcon,
     },
     {
         label: 'Soundbox',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/soundbox.svg`,
+        icon: iconMarkup(SoundOutlined),
     },
     {
         label: 'Paytm BPOS',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/paytm-bpos.svg`,
+        icon: iconMarkup(CreditCardOutlined),
     },
     {
         label: 'License Renewal',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/license-renewal.svg`,
+        icon: iconMarkup(FileSyncOutlined),
     },
     {
         label: 'Works',
@@ -250,7 +321,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/works.svg`,
+        icon: WorksIcon,
     },
     {
         label: 'Zero Carbon',
@@ -258,7 +329,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/zero-carbon.svg`,
+        icon: ZeroCarbonIcon,
     },
     {
         label: 'Connect',
@@ -266,14 +337,14 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/connect.svg`,
+        icon: ConnectIcon,
     },
     {
         label: 'ESR',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/esr.svg`,
+        icon: iconMarkup(FileTextOutlined),
     },
     {
         label: 'Hike',
@@ -281,7 +352,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/hike.svg`,
+        icon: iconMarkup(MessageOutlined),
     },
     {
         label: 'Business Emails',
@@ -289,14 +360,14 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/business-emails.svg`,
+        icon: iconMarkup(MailOutlined),
     },
     {
         label: 'Government Services',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/government-services.svg`,
+        icon: iconMarkup(BankOutlined),
     },
     {
         label: 'Logistics',
@@ -304,7 +375,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/logistics.svg`,
+        icon: LogisticsIcon,
     },
     {
         label: 'Legal Service',
@@ -312,7 +383,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/legal-service.svg`,
+        icon: iconMarkup(AuditOutlined),
     },
     {
         label: 'Softwares',
@@ -320,7 +391,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/softwares.svg`,
+        icon: iconMarkup(AppstoreOutlined),
     },
     {
         label: 'Gift Cards',
@@ -328,20 +399,20 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/gift-cards.svg`,
+        icon: GiftCardsIcon,
     },
     {
         label: 'Marketplace',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/marketplace.svg`,
+        icon: iconMarkup(ShopOutlined),
     },
     {
         label: 'Tax & More',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/tax-and-more.svg`,
+        icon: TaxIcon,
         subServices: [
             { label: 'GST Filing', hasAccess: false },
             { label: 'TDS Filing', hasAccess: false },
@@ -353,14 +424,14 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/invoicing.svg`,
+        icon: InvoicingIcon,
     },
     {
         label: 'Insurance',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/insurance.svg`,
+        icon: InsuranceIcon,
     },
     {
         label: 'WhatsApp for Business',
@@ -368,14 +439,14 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/whatsapp-for-business.svg`,
+        icon: WhatsAppForBusinessIcon,
     },
     {
         label: 'Corporate Cards',
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/corporate-cards.svg`,
+        icon: CorporateCardIcon,
     },
     {
         label: 'Hub',
@@ -383,7 +454,7 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/hub.svg`,
+        icon: PekoCloudIcon,
     },
     {
         label: 'Sales',
@@ -391,13 +462,13 @@ export const staticPartnerPermissions: Permission[] = [
         hasAccess: false,
         subServices: [],
         enableMoreService: false,
-        icon: `${ICON_CDN}/sales.svg`,
+        icon: iconMarkup(LineChartOutlined),
     },
     {
         label: 'Reports',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/reports.svg`,
+        icon: ReportsIcon,
         subServices: [
             { label: 'Transactions', hasAccess: false },
             { label: 'Cashbacks', hasAccess: false },
@@ -409,7 +480,7 @@ export const staticPartnerPermissions: Permission[] = [
         label: 'Need Help',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/need-help.svg`,
+        icon: HelpIcon,
         subServices: [
             { label: 'Contact Us', hasAccess: false },
             { label: 'Tickets', hasAccess: false },
@@ -420,7 +491,7 @@ export const staticPartnerPermissions: Permission[] = [
         label: 'Settings',
         hasAccess: false,
         enableMoreService: false,
-        icon: `${ICON_CDN}/settings.svg`,
+        icon: SettingsIcon,
         subServices: [
             { label: 'User Management', hasAccess: false },
             { label: 'Billing & Saved Cards', hasAccess: false },
