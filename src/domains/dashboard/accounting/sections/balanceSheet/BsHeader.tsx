@@ -1,9 +1,8 @@
+import { DownloadOutlined } from '@ant-design/icons';
 import { Button, Flex, Select, Typography } from 'antd';
-import { ReactSVG } from 'react-svg';
 
 import { useAppSelector } from '@src/hooks/store';
 
-import exportIcon from '../../assets/export.svg';
 import { balanceSheetHeader } from '../../utils/balanceSheetData';
 import { FULL_YEAR, FY_OPTIONS, MONTH_PERIOD_OPTIONS, fyLabel } from '../../utils/reportFilters';
 
@@ -77,7 +76,7 @@ const BsHeader = ({
                 <Button
                     onClick={onExport}
                     loading={exporting}
-                    icon={<ReactSVG src={exportIcon} className="inline-flex [&_svg]:size-5" />}
+                    icon={<DownloadOutlined />}
                     className="h-12 !border-borderStrong !text-bodyText"
                 >
                     {balanceSheetHeader.exportLabel}

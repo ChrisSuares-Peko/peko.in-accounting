@@ -29,7 +29,7 @@ const rowTextColor = (emphasis?: StatementRow['emphasis']): string => {
         case 'subtotal':
             return '#1E293B';
         default:
-            return '#64748B';
+            return '#667085'; // muted
     }
 };
 
