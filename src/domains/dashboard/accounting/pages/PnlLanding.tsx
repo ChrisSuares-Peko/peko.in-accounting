@@ -1,85 +1,152 @@
-import { Alert, Card, Col, Row, Table, Typography } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import dayjs from 'dayjs';
+import { useMemo, useState } from 'react';
 
-import { formatNumberWithLocalString } from '@utils/priceFormat';
+import { Alert, Col, Flex, Row } from 'antd';
 
 import { useNetProfit } from '../hooks/useNetProfit';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
-
-const { Title, Text } = Typography;
-
-const MOCK_TODAY = '2026-09-19';
-
-const formatAmount = (value: number) => formatNumberWithLocalString(value, 2, 2);
-
-interface PnlRow {
-    key: string;
-    name: string;
-    amount: number;
-    emphasis?: boolean;
-}
-
-const columns: ColumnsType<PnlRow> = [
-    {
-        title: 'Account',
-        dataIndex: 'name',
-        key: 'name',
-        render: (name: string, row) => (row.emphasis ? <strong>{name}</strong> : name),
-    },
-    {
-        title: 'Amount',
-        dataIndex: 'amount',
-        key: 'amount',
-        align: 'right',
-        render: (value: number, row) => (
-            <span className="tabular-nums">
-                {row.emphasis ? <strong>{formatAmount(value)}</strong> : formatAmount(value)}
-            </span>
-        ),
-    },
-];
+import DetailedPnlCard from '../sections/profitLoss/DetailedPnlCard';
+import ExpenseBreakdownCard from '../sections/profitLoss/ExpenseBreakdownCard';
+import PnlHeader from '../sections/profitLoss/PnlHeader';
+import PnlSummaryCard from '../sections/profitLoss/PnlSummaryCard';
+import { ExpenseSlice, StatementSection, SummaryRow } from '../utils/profitLossData';
+import { FULL_YEAR, currentFyStart } from '../utils/reportFilters';
+import { formatCompact, formatPct, formatRupee, pctOf, reportColor } from '../utils/reportFormat';
 
 const PnlLanding = () => {
+    const [fy, setFy] = useState(currentFyStart());
+    const [period, setPeriod] = useState(FULL_YEAR);
+
     const {
         otherIncomeAccounts,
+        otherIncomeTotal,
         salesTotal,
-        incomeTotal,
         otherExpenseAccounts,
+        otherExpenseTotal,
         purchasesTotal,
-        expenseTotal,
         netProfit,
         ledgerDataImpliedNetProfit,
     } = useNetProfit();
 
-    // Expenditure = every otherExpense account + Purchases, with Net Profit
-    // appended as the final balancing line so both columns' totals match — never
-    // hardcoded, this is incomeTotal - expenseTotal from useNetProfit().
-    const expenditureRows: PnlRow[] = [
-        ...otherExpenseAccounts.map(account => ({
-            key: account.id,
-            name: account.name,
-            amount: account.balance,
-        })),
-        { key: 'purchases', name: 'Purchases', amount: purchasesTotal },
-    ];
-    if (netProfit > 0) {
-        expenditureRows.push({ key: 'net-profit', name: 'Net Profit', amount: netProfit, emphasis: true });
-    }
-    const expenditureTotal = expenseTotal + Math.max(netProfit, 0);
+    // Maps our existing categories onto the real P&L statement's shape: Total
+    // Revenue = Sales, Cost of Goods Sold = Purchases, Operating Expenses =
+    // Other Expense, Other Income = Other Income. There's no separate "Other
+    // Expenses" bucket in this model, so that row is omitted rather than shown
+    // as an always-zero line — Operating Profit + Other Income lands on
+    // useNetProfit()'s netProfit exactly as a result.
+    const totalRevenue = salesTotal;
+    const costOfGoodsSold = purchasesTotal;
+    const grossProfit = totalRevenue - costOfGoodsSold;
+    const operatingExpenses = otherExpenseTotal;
+    const operatingProfit = grossProfit - operatingExpenses;
+    const otherIncome = otherIncomeTotal;
 
-    const incomeRows: PnlRow[] = [
-        ...otherIncomeAccounts.map(account => ({
-            key: account.id,
-            name: account.name,
-            amount: account.balance,
-        })),
-        { key: 'sales', name: 'Sales', amount: salesTotal },
-    ];
-    if (netProfit < 0) {
-        incomeRows.push({ key: 'net-loss', name: 'Net Loss', amount: -netProfit, emphasis: true });
-    }
-    const incomeTotalWithBalancing = incomeTotal + Math.max(-netProfit, 0);
+    const detailedSections = useMemo<StatementSection[]>(
+        () => [
+            {
+                key: 'revenue',
+                heading: 'REVENUE',
+                rows: [{ label: 'Total Revenue', amount: totalRevenue, emphasis: 'warning' }],
+            },
+            {
+                key: 'cogs',
+                heading: 'COST OF GOODS SOLD',
+                rows: [
+                    { label: 'Purchases', amount: costOfGoodsSold },
+                    { label: 'Gross Profit', amount: grossProfit, emphasis: 'subtotal' },
+                ],
+            },
+            {
+                key: 'operatingExpenses',
+                heading: 'OPERATING EXPENSES',
+                rows: [
+                    ...otherExpenseAccounts.map(account => ({
+                        label: account.name,
+                        amount: account.balance,
+                    })),
+                    {
+                        label: 'Total Operating Expenses',
+                        amount: operatingExpenses,
+                        emphasis: 'subtotal',
+                    },
+                    { label: 'Operating Profit', amount: operatingProfit, emphasis: 'subtotal' },
+                ],
+            },
+            {
+                key: 'otherIncome',
+                heading: 'OTHER INCOME',
+                rows: [
+                    ...otherIncomeAccounts.map(account => ({
+                        label: account.name,
+                        amount: account.balance,
+                    })),
+                    {
+                        label: 'Total Other Income',
+                        amount: otherIncome,
+                        emphasis: 'subtotal',
+                    },
+                ],
+            },
+            {
+                key: 'net',
+                rows: [{ label: 'Net Profit', amount: netProfit, emphasis: 'success' }],
+            },
+        ],
+        [
+            totalRevenue,
+            costOfGoodsSold,
+            grossProfit,
+            operatingExpenses,
+            operatingProfit,
+            otherExpenseAccounts,
+            otherIncomeAccounts,
+            otherIncome,
+            netProfit,
+        ]
+    );
+
+    const pnlSummaryData = useMemo(() => {
+        const rows: SummaryRow[] = [
+            { label: 'Total Revenue', value: formatCompact(totalRevenue), emphasis: 'warning' },
+            { label: 'Cost of Goods Sold', value: `-${formatCompact(costOfGoodsSold)}` },
+            { label: 'Gross Profit', value: formatCompact(grossProfit), emphasis: 'subtotal' },
+            { label: 'Operating Expenses', value: `-${formatCompact(operatingExpenses)}` },
+            { label: 'Operating Profit', value: formatCompact(operatingProfit), emphasis: 'subtotal' },
+            { label: 'Other Income', value: formatCompact(otherIncome) },
+            { label: 'Net Profit', value: formatCompact(netProfit), emphasis: 'success' },
+        ];
+        const marginPct = (value: number) => (totalRevenue > 0 ? (value / totalRevenue) * 100 : 0);
+        return {
+            title: 'P&L Summary',
+            rows,
+            margins: [
+                { label: 'Gross Margin', value: formatPct(marginPct(grossProfit)) },
+                { label: 'Operating Margin', value: formatPct(marginPct(operatingProfit)) },
+                { label: 'Net Margin', value: formatPct(marginPct(netProfit)) },
+            ],
+        };
+    }, [totalRevenue, costOfGoodsSold, grossProfit, operatingExpenses, operatingProfit, otherIncome, netProfit]);
+
+    const expenseSlices: ExpenseSlice[] = useMemo(
+        () =>
+            otherExpenseAccounts.map((account, index) => ({
+                label: account.name,
+                value: account.balance,
+                color: reportColor(index),
+                display: formatRupee(account.balance),
+                pct: `${pctOf(account.balance, operatingExpenses)}%`,
+            })),
+        [otherExpenseAccounts, operatingExpenses]
+    );
+
+    const expenseBreakdownData = useMemo(
+        () => ({
+            title: 'Expense Breakdown',
+            centerLabel: 'Total Operating Expenses',
+            centerValue: formatCompact(operatingExpenses),
+            slices: expenseSlices,
+        }),
+        [operatingExpenses, expenseSlices]
+    );
 
     const ledgerDataMatches = ledgerDataImpliedNetProfit === netProfit;
 
@@ -89,81 +156,41 @@ const PnlLanding = () => {
                 <AccountingSectionTabs activeKey="pnl" />
             </Col>
             <Col span={24}>
-                <Title level={4} className="!mb-0">
-                    Profit &amp; Loss
-                </Title>
-                <Text type="secondary">for the period as of {dayjs(MOCK_TODAY).format('D MMMM YYYY')}</Text>
-            </Col>
-            {!ledgerDataMatches && (
-                <Col span={24}>
-                    <Alert
-                        type="warning"
-                        showIcon
-                        message="Net Profit doesn't match useLedgerData()'s aggregate figures"
-                        description={
-                            <>
-                                This page computes Net Profit as{' '}
-                                <strong>₹{formatAmount(netProfit)}</strong> from the newer
-                                per-head/Books of Accounts datasets. The older aggregate dataset
-                                behind useLedgerData() (also used by the Dashboard and Ledgers
-                                summary page) implies{' '}
-                                <strong>₹{formatAmount(ledgerDataImpliedNetProfit)}</strong> for the
-                                same period from its own Sales/Purchases/Other Income/Other Expense
-                                figures. These datasets were built in separate, earlier passes and
-                                were never reconciled — this is a real, pre-existing data
-                                inconsistency, not a computation bug on this page.
-                            </>
-                        }
-                    />
-                </Col>
-            )}
-            <Col span={24}>
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} md={12}>
-                        <Card title="Expenditure">
-                            <Table
-                                columns={columns}
-                                dataSource={expenditureRows}
-                                pagination={false}
-                                rowKey="key"
-                                summary={() => (
-                                    <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0}>
-                                            <strong>Total</strong>
-                                        </Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1} align="right">
-                                            <strong className="tabular-nums">
-                                                {formatAmount(expenditureTotal)}
-                                            </strong>
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row>
-                                )}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={24} md={12}>
-                        <Card title="Income">
-                            <Table
-                                columns={columns}
-                                dataSource={incomeRows}
-                                pagination={false}
-                                rowKey="key"
-                                summary={() => (
-                                    <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0}>
-                                            <strong>Total</strong>
-                                        </Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1} align="right">
-                                            <strong className="tabular-nums">
-                                                {formatAmount(incomeTotalWithBalancing)}
-                                            </strong>
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row>
-                                )}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
+                <Flex vertical gap={24} className="w-full">
+                    <PnlHeader fy={fy} period={period} onFyChange={setFy} onPeriodChange={setPeriod} />
+
+                    {!ledgerDataMatches && (
+                        <Alert
+                            type="warning"
+                            showIcon
+                            message="Net Profit doesn't match useLedgerData()'s aggregate figures"
+                            description={
+                                <>
+                                    This page computes Net Profit as{' '}
+                                    <strong>{formatRupee(netProfit)}</strong> from the Books of
+                                    Accounts datasets. The older aggregate dataset behind
+                                    useLedgerData() implies{' '}
+                                    <strong>{formatRupee(ledgerDataImpliedNetProfit)}</strong> for
+                                    the same period — these were built in separate passes and were
+                                    never reconciled. This is a real, pre-existing data
+                                    inconsistency, not a computation bug on this page.
+                                </>
+                            }
+                        />
+                    )}
+
+                    <Row gutter={[24, 24]} className="w-full">
+                        <Col xs={24} xl={15}>
+                            <DetailedPnlCard sections={detailedSections} />
+                        </Col>
+                        <Col xs={24} xl={9}>
+                            <Flex vertical gap={24} className="w-full">
+                                <PnlSummaryCard data={pnlSummaryData} />
+                                <ExpenseBreakdownCard data={expenseBreakdownData} />
+                            </Flex>
+                        </Col>
+                    </Row>
+                </Flex>
             </Col>
         </Row>
     );
