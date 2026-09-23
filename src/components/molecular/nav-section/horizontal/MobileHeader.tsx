@@ -50,15 +50,19 @@ const MobileHeader = ({ handleDraggerOpen }: MobileHeaderType) => {
                         style={{ marginRight: '4px', fontSize: '18px' }}
                     />
                 )} */}
-                {user?.roleName === 'corporate sub user' && (
-                    <Button
-                        type="text"
-                        className="mt-3"
-                        style={{ background: '#ffffff' }}
-                        icon={<MenuOutlined style={{ fontSize: 20 }} />}
-                        onClick={() => handleDraggerOpen()}
-                    />
-                )}
+                {/* Unconditional — every authenticated role gets some sidebar
+                (see loginSlice.ts's role notes and SidebarData's per-role
+                generateCorporateData/-System-/-EmployeeData), and the desktop
+                header's own equivalent hamburger (DashboardLayout.tsx) has no
+                role check either. There's no role this button should be
+                hidden from. */}
+                <Button
+                    type="text"
+                    className="mt-3"
+                    style={{ background: '#ffffff' }}
+                    icon={<MenuOutlined style={{ fontSize: 20 }} />}
+                    onClick={() => handleDraggerOpen()}
+                />
                 <Image
                     src={Logo}
                     alt="logo"
