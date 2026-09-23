@@ -1,11 +1,12 @@
-import { useAppSelector } from '@src/hooks/store';
-import { selectDataMode } from '@src/slices/dataModeSlice';
-
-import { DUMMY_OTHER_EXPENSE_ENTRIES, EMPTY_OTHER_EXPENSE_ENTRIES } from '../data/otherExpenseData';
+import { useChartOfAccounts } from './useChartOfAccounts';
+import { usePostings } from './usePostings';
+import { OTHER_EXPENSE_NORMAL_SIDE } from '../data/otherExpenseData';
 import { GeneralLedgerEntry } from '../types/generalLedger';
+import { generalLedgerEntriesForHead } from '../utils/postingsMath';
 
-// Mirrors useLedgerData()'s pattern — reads the same app-wide data mode toggle.
+// Derived from the canonical posting log — see postingsMath.ts.
 export const useOtherExpenseEntries = (): GeneralLedgerEntry[] => {
-    const mode = useAppSelector(selectDataMode);
-    return mode === 'dummy' ? DUMMY_OTHER_EXPENSE_ENTRIES : EMPTY_OTHER_EXPENSE_ENTRIES;
+    const postings = usePostings();
+    const chart = useChartOfAccounts();
+    return generalLedgerEntriesForHead(postings, chart, 'otherExpense', OTHER_EXPENSE_NORMAL_SIDE);
 };

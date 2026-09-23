@@ -1,11 +1,11 @@
-import { useAppSelector } from '@src/hooks/store';
-import { selectDataMode } from '@src/slices/dataModeSlice';
-
-import { DUMMY_ANAND_TRADERS_ENTRIES, EMPTY_ANAND_TRADERS_ENTRIES } from '../data/anandTradersData';
+import { usePostings } from './usePostings';
 import { GeneralLedgerEntry } from '../types/generalLedger';
+import { generalLedgerEntriesFor } from '../utils/postingsMath';
 
-// Mirrors useLedgerData()'s pattern — reads the same app-wide data mode toggle.
+const ANAND_TRADERS_ACCOUNT_ID = '4002';
+
+// Derived from the canonical posting log — see postingsMath.ts.
 export const useAnandTradersEntries = (): GeneralLedgerEntry[] => {
-    const mode = useAppSelector(selectDataMode);
-    return mode === 'dummy' ? DUMMY_ANAND_TRADERS_ENTRIES : EMPTY_ANAND_TRADERS_ENTRIES;
+    const postings = usePostings();
+    return generalLedgerEntriesFor(postings, [ANAND_TRADERS_ACCOUNT_ID], 'Cr');
 };

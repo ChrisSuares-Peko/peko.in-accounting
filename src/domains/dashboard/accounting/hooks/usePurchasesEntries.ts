@@ -1,11 +1,12 @@
-import { useAppSelector } from '@src/hooks/store';
-import { selectDataMode } from '@src/slices/dataModeSlice';
-
-import { DUMMY_PURCHASES_ENTRIES, EMPTY_PURCHASES_ENTRIES } from '../data/purchasesData';
+import { useChartOfAccounts } from './useChartOfAccounts';
+import { usePostings } from './usePostings';
+import { PURCHASES_NORMAL_SIDE } from '../data/purchasesData';
 import { GeneralLedgerEntry } from '../types/generalLedger';
+import { generalLedgerEntriesForHead } from '../utils/postingsMath';
 
-// Mirrors useLedgerData()'s pattern — reads the same app-wide data mode toggle.
+// Derived from the canonical posting log — see postingsMath.ts.
 export const usePurchasesEntries = (): GeneralLedgerEntry[] => {
-    const mode = useAppSelector(selectDataMode);
-    return mode === 'dummy' ? DUMMY_PURCHASES_ENTRIES : EMPTY_PURCHASES_ENTRIES;
+    const postings = usePostings();
+    const chart = useChartOfAccounts();
+    return generalLedgerEntriesForHead(postings, chart, 'purchases', PURCHASES_NORMAL_SIDE);
 };

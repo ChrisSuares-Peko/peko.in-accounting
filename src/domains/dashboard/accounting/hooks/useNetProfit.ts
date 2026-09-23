@@ -48,18 +48,28 @@ export const useNetProfit = (): NetProfitBreakdown => {
 
         const netProfit = incomeTotal - expenseTotal;
 
+        // Each LedgerLineItem's closingBalance is signed toward ITS OWN
+        // normalBalance, not the head's — a head can mix normal sides (Sales
+        // Returns is Dr-normal inside the Cr-normal Sales head; Purchase
+        // Returns is Cr-normal inside the Dr-normal Purchases head), so naively
+        // summing raw closingBalance across a head would silently add a contra
+        // account's balance instead of subtracting it. Re-sign each item
+        // toward the head's target side first.
+        const signedToward = (item: { normalBalance: 'Dr' | 'Cr'; closingBalance: number }, targetSide: 'Dr' | 'Cr') =>
+            item.normalBalance === targetSide ? item.closingBalance : -item.closingBalance;
+
         const ledgerOtherIncome = ledgerData
             .filter(item => item.head === 'otherIncome')
-            .reduce((sum, item) => sum + item.closingBalance, 0);
+            .reduce((sum, item) => sum + signedToward(item, 'Cr'), 0);
         const ledgerSales = ledgerData
             .filter(item => item.head === 'sales')
-            .reduce((sum, item) => sum + item.closingBalance, 0);
+            .reduce((sum, item) => sum + signedToward(item, 'Cr'), 0);
         const ledgerOtherExpense = ledgerData
             .filter(item => item.head === 'otherExpense')
-            .reduce((sum, item) => sum + item.closingBalance, 0);
+            .reduce((sum, item) => sum + signedToward(item, 'Dr'), 0);
         const ledgerPurchases = ledgerData
             .filter(item => item.head === 'purchases')
-            .reduce((sum, item) => sum + item.closingBalance, 0);
+            .reduce((sum, item) => sum + signedToward(item, 'Dr'), 0);
         const ledgerDataImpliedNetProfit =
             ledgerOtherIncome + ledgerSales - (ledgerOtherExpense + ledgerPurchases);
 

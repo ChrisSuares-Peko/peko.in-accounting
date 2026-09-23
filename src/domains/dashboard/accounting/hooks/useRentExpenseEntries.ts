@@ -1,11 +1,11 @@
-import { useAppSelector } from '@src/hooks/store';
-import { selectDataMode } from '@src/slices/dataModeSlice';
-
-import { DUMMY_RENT_EXPENSE_ENTRIES, EMPTY_RENT_EXPENSE_ENTRIES } from '../data/rentExpenseData';
+import { usePostings } from './usePostings';
 import { GeneralLedgerEntry } from '../types/generalLedger';
+import { generalLedgerEntriesFor } from '../utils/postingsMath';
 
-// Mirrors useLedgerData()'s pattern — reads the same app-wide data mode toggle.
+const RENT_EXPENSE_ACCOUNT_ID = '9001';
+
+// Derived from the canonical posting log — see postingsMath.ts.
 export const useRentExpenseEntries = (): GeneralLedgerEntry[] => {
-    const mode = useAppSelector(selectDataMode);
-    return mode === 'dummy' ? DUMMY_RENT_EXPENSE_ENTRIES : EMPTY_RENT_EXPENSE_ENTRIES;
+    const postings = usePostings();
+    return generalLedgerEntriesFor(postings, [RENT_EXPENSE_ACCOUNT_ID], 'Dr');
 };

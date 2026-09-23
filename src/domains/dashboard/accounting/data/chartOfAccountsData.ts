@@ -20,6 +20,12 @@ export const CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     { id: '3001', code: '3001', name: 'Rahul Enterprises', head: 'assets', group: 'Accounts Receivable', normalBalance: 'Dr', classification: 'Current' },
     { id: '3002', code: '3002', name: 'Kavya Textiles', head: 'assets', group: 'Accounts Receivable', normalBalance: 'Dr', classification: 'Current' },
     { id: '3003', code: '3003', name: 'Meridian Textiles', head: 'assets', group: 'Accounts Receivable', normalBalance: 'Dr', classification: 'Current' },
+    // Introduced partway through the generated posting history (see
+    // postingsGenerator.ts) rather than existing from day one — a growing
+    // customer list, not a fixed one.
+    { id: '3004', code: '3004', name: 'Verma & Sons', head: 'assets', group: 'Accounts Receivable', normalBalance: 'Dr', classification: 'Current' },
+    { id: '3005', code: '3005', name: 'Aarav Distributors', head: 'assets', group: 'Accounts Receivable', normalBalance: 'Dr', classification: 'Current' },
+    { id: '3006', code: '3006', name: 'Nisha Apparels', head: 'assets', group: 'Accounts Receivable', normalBalance: 'Dr', classification: 'Current' },
     { id: '3101', code: '3101', name: 'Plant & Machinery', head: 'assets', group: 'Fixed Assets', normalBalance: 'Dr', classification: 'Non-Current' },
     { id: '3190', code: '3190', name: 'Accumulated Depreciation', head: 'assets', group: 'Fixed Assets', normalBalance: 'Cr', classification: 'Non-Current' },
     { id: '3201', code: '3201', name: 'Prepaid Expenses', head: 'assets', group: 'Other Current Assets', normalBalance: 'Dr', classification: 'Current' },
@@ -28,6 +34,9 @@ export const CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     // Liabilities
     { id: '4001', code: '4001', name: 'Shree Packaging Co.', head: 'liabilities', group: 'Accounts Payable', normalBalance: 'Cr', classification: 'Current' },
     { id: '4002', code: '4002', name: 'Anand Traders', head: 'liabilities', group: 'Accounts Payable', normalBalance: 'Cr', classification: 'Current' },
+    // Introduced partway through the generated posting history, same as the new
+    // customers above.
+    { id: '4003', code: '4003', name: 'Om Logistics', head: 'liabilities', group: 'Accounts Payable', normalBalance: 'Cr', classification: 'Current' },
     { id: '4101', code: '4101', name: 'CGST Payable', head: 'liabilities', group: 'Duties & Taxes', normalBalance: 'Cr', classification: 'Current' },
     { id: '4102', code: '4102', name: 'SGST Payable', head: 'liabilities', group: 'Duties & Taxes', normalBalance: 'Cr', classification: 'Current' },
     { id: '4103', code: '4103', name: 'IGST Payable', head: 'liabilities', group: 'Duties & Taxes', normalBalance: 'Cr', classification: 'Current' },
@@ -43,6 +52,11 @@ export const CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     { id: '5101', code: '5101', name: 'Reserves & Surplus', head: 'equity', group: 'Reserves & Surplus', normalBalance: 'Cr' },
     { id: '5103', code: '5103', name: 'Current Year Earnings', head: 'equity', group: 'Reserves & Surplus', normalBalance: 'Cr' },
     { id: '5002', code: '5002', name: 'Drawings', head: 'equity', group: 'Drawings', normalBalance: 'Dr' },
+    // Suspense-style clearing account used only to seed the 1 Jan 2026 opening
+    // balances as structurally normal double-entry Postings (see
+    // openingBalances.ts) — not a real account a user would post to. Nets to
+    // exactly zero once every opening balance posting is in.
+    { id: '5099', code: '5099', name: 'Opening Balance Equity', head: 'equity', group: 'Opening Balance Equity', normalBalance: 'Cr' },
 
     // Sales
     { id: '6001', code: '6001', name: 'Sales – Domestic', head: 'sales', group: 'Sales', normalBalance: 'Cr' },
@@ -67,4 +81,5 @@ export const CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     { id: '9005', code: '9005', name: 'Bank Charges', head: 'otherExpense', group: 'Other Expense', normalBalance: 'Dr' },
     { id: '9010', code: '9010', name: 'Salaries & Wages', head: 'otherExpense', group: 'Other Expense', normalBalance: 'Dr' },
     { id: '9011', code: '9011', name: 'Depreciation Expense', head: 'otherExpense', group: 'Other Expense', normalBalance: 'Dr' },
+    { id: '9006', code: '9006', name: 'Interest on Loan', head: 'otherExpense', group: 'Other Expense', normalBalance: 'Dr' },
 ];

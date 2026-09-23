@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { useBooksAccounts } from './useBooksAccounts';
 import { useLedgerData } from './useLedgerData';
+import { useNetProfit } from './useNetProfit';
 import { categoryFor } from '../types/booksAccount';
 import { sumAccountsSigned } from '../utils/ledgerMath';
 
@@ -41,18 +42,33 @@ const isLoanAccount = (name: string) => name.startsWith('Bank Loan');
 export const useBalanceSheetData = (): BalanceSheetData => {
     const accounts = useBooksAccounts();
     const ledgerData = useLedgerData();
+    const { netProfit } = useNetProfit();
 
     return useMemo(() => {
         const equityAccounts = accounts.filter(account => categoryFor(account) === 'equity');
+        // Income/Expense are separate flow heads in the posting log — they never
+        // touch an Equity account directly — so a live, un-closed Net Profit has
+        // to be folded in here explicitly as unappropriated current-year
+        // earnings, or Assets would never equal Liabilities + Equity for a mid-
+        // year balance sheet (verified: without this line, the two sides differ
+        // by exactly the period's Net Profit). This is standard interim-
+        // financial-statement treatment, not a plug.
         const capitalAccount: BalanceSheetGroup = {
             key: 'capital-account',
             label: 'Capital Account',
-            total: sumAccountsSigned(equityAccounts, 'Cr'),
-            items: equityAccounts.map(account => ({
-                id: account.id,
-                name: account.name,
-                amount: account.side === 'Cr' ? account.balance : -account.balance,
-            })),
+            total: sumAccountsSigned(equityAccounts, 'Cr') + netProfit,
+            items: [
+                ...equityAccounts.map(account => ({
+                    id: account.id,
+                    name: account.name,
+                    amount: account.side === 'Cr' ? account.balance : -account.balance,
+                })),
+                {
+                    id: 'current-year-earnings-unappropriated',
+                    name: 'Current Year Earnings (unappropriated)',
+                    amount: netProfit,
+                },
+            ],
         };
 
         const liabilityAccounts = accounts.filter(account => categoryFor(account) === 'liabilities');
@@ -147,5 +163,5 @@ export const useBalanceSheetData = (): BalanceSheetData => {
             currentAssets,
             assetsTotal,
         };
-    }, [accounts, ledgerData]);
+    }, [accounts, ledgerData, netProfit]);
 };

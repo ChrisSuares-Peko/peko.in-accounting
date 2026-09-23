@@ -1,11 +1,26 @@
-import { useAppSelector } from '@src/hooks/store';
-import { selectDataMode } from '@src/slices/dataModeSlice';
+import dayjs from 'dayjs';
 
-import { DUMMY_DAY_BOOK_ENTRIES, EMPTY_DAY_BOOK_ENTRIES } from '../data/dayBookData';
+import { usePostings } from './usePostings';
 import { DayBookEntry } from '../types/dayBook';
 
-// Mirrors useLedgerData()'s pattern — reads the same app-wide data mode toggle.
+// Every Posting IS a Day Book entry — mapped directly, most recent first. All
+// of this generated history is settled ('Posted'); the Pending Review/Pending
+// Approval statuses stay available in DayBookEntryStatus for anything created
+// interactively after this data loads.
 export const useDayBookEntries = (): DayBookEntry[] => {
-    const mode = useAppSelector(selectDataMode);
-    return mode === 'dummy' ? DUMMY_DAY_BOOK_ENTRIES : EMPTY_DAY_BOOK_ENTRIES;
+    const postings = usePostings();
+
+    return [...postings]
+        .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
+        .map(posting => ({
+            id: posting.id,
+            date: posting.date,
+            when: dayjs(posting.date).format('D MMM'),
+            voucher: posting.voucherNo,
+            type: posting.voucherType,
+            source: posting.source,
+            narration: posting.narration,
+            amount: posting.amount,
+            status: 'Posted',
+        }));
 };
