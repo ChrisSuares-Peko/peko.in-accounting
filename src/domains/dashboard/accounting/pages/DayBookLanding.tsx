@@ -6,12 +6,13 @@ import {
     ExclamationCircleOutlined,
     PlusOutlined,
 } from '@ant-design/icons';
-import { Button, Col, DatePicker, Flex, Row, Select, Statistic, Table, Tag, Typography } from 'antd';
+import { Button, Col, DatePicker, Flex, Row, Select, Table, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 
 import { useDayBookEntries } from '../hooks/useDayBookEntries';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
+import DashboardStatCard from '../sections/DashboardStatCard';
 import SectionCard from '../sections/profitLoss/SectionCard';
 import {
     DAY_BOOK_ENTRY_SOURCES,
@@ -111,36 +112,39 @@ const DayBookLanding = () => {
             <Col span={24}>
                 <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12} xl={8}>
-                        <SectionCard title="Pending Review">
-                            <Statistic
-                                value={stats.pendingReview}
-                                prefix={<ClockCircleOutlined className="text-bodyText" />}
-                                formatter={value => <span className="text-bodyText">{value}</span>}
-                            />
-                        </SectionCard>
+                        <DashboardStatCard
+                            title="Pending Review"
+                            value={stats.pendingReview}
+                            icon={<ClockCircleOutlined />}
+                            chipClassName="border border-borderStrong bg-surfaceGray text-muted"
+                            accentClassName="border-l-muted"
+                            caption="Awaiting confirmation before posting"
+                        />
                     </Col>
                     <Col xs={24} sm={12} xl={8}>
-                        <SectionCard title="Pending Approval">
-                            <Statistic
-                                value={stats.pendingApproval}
-                                prefix={<ExclamationCircleOutlined className="text-warning" />}
-                                formatter={value => <span className="text-warning">{value}</span>}
-                            />
-                        </SectionCard>
+                        <DashboardStatCard
+                            title="Pending Approval"
+                            value={stats.pendingApproval}
+                            icon={<ExclamationCircleOutlined />}
+                            chipClassName="border border-warning-border bg-warning-surface text-warning"
+                            accentClassName="border-l-warning"
+                            caption="Requires sign-off before posting"
+                        />
                     </Col>
                     <Col xs={24} sm={12} xl={8}>
-                        <SectionCard title="Posted Today">
-                            <Statistic
-                                value={stats.postedToday}
-                                prefix={<CheckCircleOutlined className="text-success" />}
-                                formatter={value => <span className="text-success">{value}</span>}
-                            />
-                        </SectionCard>
+                        <DashboardStatCard
+                            title="Posted Today"
+                            value={stats.postedToday}
+                            icon={<CheckCircleOutlined />}
+                            chipClassName="border border-success-border bg-success-surface text-success"
+                            accentClassName="border-l-success"
+                            caption={`as of ${dayjs().format('h:mm A')}`}
+                        />
                     </Col>
                 </Row>
             </Col>
             <Col span={24}>
-                <SectionCard title="Filter">
+                <SectionCard title="Filter" className="!py-2 md:!py-3">
                     <Row gutter={[16, 16]}>
                         <Col xs={24} md={8}>
                             <Flex vertical gap={4}>

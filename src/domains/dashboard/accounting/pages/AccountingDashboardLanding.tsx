@@ -10,7 +10,7 @@ import {
     TeamOutlined,
     WalletOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Col, Empty, Flex, List, Row, Statistic, Table, Tag, Typography } from 'antd';
+import { Avatar, Button, Col, Empty, Flex, List, Row, Table, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 
@@ -18,6 +18,7 @@ import { useLedgerData } from '../hooks/useLedgerData';
 import { useNotifications } from '../hooks/useNotifications';
 import { useRecentTransactions } from '../hooks/useRecentTransactions';
 import AccountingSectionTabs from '../sections/AccountingSectionTabs';
+import DashboardStatCard from '../sections/DashboardStatCard';
 import SectionCard from '../sections/profitLoss/SectionCard';
 import { LedgerHead } from '../types/ledger';
 import { AccountingNotification, NotificationCategory } from '../types/notification';
@@ -31,35 +32,6 @@ const { Title, Text } = Typography;
 const MOCK_TODAY = '2026-09-19';
 
 const ASSET_HEADS: LedgerHead[] = ['cashBank', 'stock', 'assets'];
-
-interface DashboardStatCardProps {
-    title: string;
-    value: number;
-    icon: React.ReactNode;
-    chipClassName: string;
-    accentClassName: string;
-    caption: string;
-}
-
-// Every figure-card on this dashboard shares the same shape — icon chip
-// (sized to match the Notifications panel's own Avatar chips below),
-// colored left-border accent, compact value, and a live caption.
-const DashboardStatCard = ({
-    title,
-    value,
-    icon,
-    chipClassName,
-    accentClassName,
-    caption,
-}: DashboardStatCardProps) => (
-    <SectionCard title={title} className={`border-l-4 ${accentClassName}`}>
-        <Flex vertical gap={8}>
-            <Avatar size={32} icon={icon} className={chipClassName} />
-            <Statistic value={value} formatter={v => formatCompact(Number(v))} />
-            <Text className="text-xs text-muted">{caption}</Text>
-        </Flex>
-    </SectionCard>
-);
 
 // <=2 days: error (red), 3-7 days: warning (amber), 8+ days: default (grey) — antd's
 // own preset Tag colors, not custom hex.
@@ -182,6 +154,7 @@ const AccountingDashboardLanding = () => {
                                     chipClassName="border border-success-border bg-success-surface text-success"
                                     accentClassName="border-l-success"
                                     caption={`as of ${dayjs(MOCK_TODAY).format('D MMMM YYYY')}`}
+                                    formatter={formatCompact}
                                 />
                             </Col>
                             <Col xs={24} sm={12} xl={8}>
@@ -192,6 +165,7 @@ const AccountingDashboardLanding = () => {
                                     chipClassName="border border-danger-border bg-danger-surface text-danger"
                                     accentClassName="border-l-danger"
                                     caption={`as of ${dayjs(MOCK_TODAY).format('D MMMM YYYY')}`}
+                                    formatter={formatCompact}
                                 />
                             </Col>
                             <Col xs={24} sm={12} xl={8}>
@@ -202,6 +176,7 @@ const AccountingDashboardLanding = () => {
                                     chipClassName="border border-borderStrong bg-surfaceGray text-ink"
                                     accentClassName="border-l-ink"
                                     caption={`as of ${dayjs(MOCK_TODAY).format('D MMMM YYYY')}`}
+                                    formatter={formatCompact}
                                 />
                             </Col>
                             <Col xs={24} sm={12}>
@@ -212,6 +187,7 @@ const AccountingDashboardLanding = () => {
                                     chipClassName="border border-success-border bg-success-surface text-success"
                                     accentClassName="border-l-success"
                                     caption={`${totals.receivableCount} invoice${totals.receivableCount === 1 ? '' : 's'} outstanding`}
+                                    formatter={formatCompact}
                                 />
                             </Col>
                             <Col xs={24} sm={12}>
@@ -222,6 +198,7 @@ const AccountingDashboardLanding = () => {
                                     chipClassName="border border-danger-border bg-danger-surface text-danger"
                                     accentClassName="border-l-danger"
                                     caption={`${totals.payableCount} bill${totals.payableCount === 1 ? '' : 's'} outstanding`}
+                                    formatter={formatCompact}
                                 />
                             </Col>
                             <Col span={24}>
